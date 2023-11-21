@@ -1,4 +1,4 @@
 name: TreeDetector
 version: '${project.version}'
-main: org.x00hero.treedetector.TreeDetector
+main: org.x00hero.TreeDetector.Main
 api-version: '1.18'

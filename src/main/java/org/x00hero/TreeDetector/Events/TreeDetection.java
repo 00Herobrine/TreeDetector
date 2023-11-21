@@ -1,4 +1,4 @@
-package org.x00hero.TreeDetector.Events.Minecraft;
+package org.x00hero.TreeDetector.Events;
 
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
@@ -7,7 +7,8 @@ import org.bukkit.entity.Slime;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
-import org.bukkit.event.entity.EntityDamageByBlockEvent;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.x00hero.TreeDetector.ActivityManager;
 import org.x00hero.TreeDetector.Components.Tree;
@@ -20,10 +21,22 @@ public class TreeDetection implements Listener {
     static int maxSearchDistance = 10; // distance from initial block
 
     @EventHandler
-    public void onColliderSuffocate(EntityDamageByBlockEvent e) {
-        if(!(e.getEntity() instanceof Slime)) return;
-        Slime slime = (Slime) e.getEntity();
-        if(slime.getCustomName() != null && slime.getCustomName().equalsIgnoreCase("TREE-COLLIDER")) e.setCancelled(true);
+    public void Damage(EntityDamageEvent e) {
+        if(e.getCause() == EntityDamageEvent.DamageCause.SUFFOCATION && e.getEntity() instanceof Slime slime)
+            if(slime.getCustomName() != null && slime.getCustomName().equalsIgnoreCase("TREE-COLLIDER")) e.setCancelled(true);
+    }
+
+    @EventHandler
+    public void EntityHit(EntityDamageByEntityEvent e) {
+        if(!(e.getDamager() instanceof Player player)) return;
+        if(ActivityManager.isActive(player)) {
+            if(!(e.getEntity() instanceof Slime slime)) return;
+            Tree tree = ActivityManager.getTree(player);
+            log("Hitting entity");
+            Slime activeSlime = tree.zone.getSlime();
+            if(activeSlime != null && activeSlime.equals(slime))
+                tree.hitZone(player);
+        }
     }
 
     @EventHandler
@@ -36,18 +49,11 @@ public class TreeDetection implements Listener {
         if(!isTree(result)) return;
         if(ActivityManager.isActive(player)) {
             Tree activeTree = ActivityManager.getTree(player);
-/*            log("Got Active " + activeTree.bottomTrunk.getLocation());
-            log("Active-Bottom: " + activeTree.bottomTrunk.getLocation());
-            log("Result-Bottom: " + result.bottomTrunk.getLocation());*/
-            if(activeTree.bottomTrunk.equals(result.bottomTrunk)) {
-                log("Similar");
-                if(activeTree.isExpired()) activeTree.randomize();
-                else activeTree.displayParticle(player);
-            } else { log("Swapped Trees"); result.startGame(player); }
+            if(activeTree.getBottomTrunk().equals(result.getBottomTrunk())) { // similar trees
+                if(activeTree.zone.isExpired()) activeTree.randomizeZone();
+                else activeTree.missedZone(player); // player missed slime
+            } else result.startGame(player); // swapped trees
         } else result.startGame(player);
-        //player.sendMessage("Tree [Type: " + block.getType().name().split("_")[0] + " Logs: " + result.logCount() + " Leaves: " + result.leafCount() + " Ground: " + result.getGround().getType()+"]");
-/*        log("Top: " + result.topTrunk.getLocation());
-        log("Bottom: " + result.bottomTrunk.getLocation());*/
     }
 
     private static final BlockFace[] searchDirections = new BlockFace[]{BlockFace.NORTH, BlockFace.EAST, BlockFace.SOUTH, BlockFace.WEST, BlockFace.UP, BlockFace.DOWN};

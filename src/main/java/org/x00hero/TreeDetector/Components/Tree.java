@@ -1,29 +1,32 @@
-package org.x00hero.treedetector;
+package org.x00hero.TreeDetector.Components;
 
+import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
+import org.x00hero.TreeDetector.ActivityManager;
+import org.x00hero.TreeDetector.Events.Tree.Zone.TreeZoneMissEvent;
+import org.x00hero.TreeDetector.Events.Tree.Zone.TreeZoneStartEvent;
 
 import java.util.HashSet;
 import java.util.Set;
 
-import static org.x00hero.treedetector.Events.BlockBreak.isLogBlock;
+import static org.x00hero.TreeDetector.Events.TreeDetection.isLogBlock;
+import static org.x00hero.TreeDetector.Main.CallEvent;
 
-public class TreeResult {
+public class Tree {
     public final Block initialBlock;
-    public Block bottomTrunk, topTrunk;
+    private Block bottomTrunk, topTrunk;
     public Set<Block> connectedLogs = new HashSet<>();
     public Set<Block> connectedLeaves = new HashSet<>();
-    public final long timeCreated;
-    public long expirationTime;
-    public TreeGame game;
+    public TreeZone zone;
+    public int zonesHit, zonesTotal, timesHit;
 
-    public TreeResult(Block initialBlock) {
+    public Tree(Block initialBlock) {
         this.initialBlock = initialBlock;
         if(isLogBlock(initialBlock)) addLog(initialBlock);
-        game = new TreeGame(initialBlock.getLocation());
-        timeCreated = System.currentTimeMillis();
-        updateExpiration();
+        zone = new TreeZone(initialBlock.getLocation());
+        zone.updateExpiration();
     }
     public void addLog(Block block) {
         connectedLogs.add(block);
@@ -35,21 +38,28 @@ public class TreeResult {
     }
     public int logCount() { return connectedLogs.size(); }
     public int leafCount() { return connectedLeaves.size(); }
+    public Material getTrunkType() { return getBottomTrunk().getType(); }
+    public Block getBottomTrunk() { return bottomTrunk; }
+    public Block getTopTrunk() { return topTrunk; }
+    public Block getInitialBlock;
     public Block getGround() { return bottomTrunk.getRelative(BlockFace.DOWN); }
-    public void updateExpiration() { expirationTime = System.currentTimeMillis() + (60 * 1000); }
-    public boolean isExpired() { return System.currentTimeMillis() >= expirationTime; }
-    public boolean isSimilar(TreeResult result) { return bottomTrunk == result.bottomTrunk; }
-    public void randomize() {
-        game.randomizeLocation();
-    }
     public void startGame(Player player) {
-        if(ActivityManager.isActive(player)) ActivityManager.getTree(player).game.endSlime();
+        if(ActivityManager.isActive(player)) ActivityManager.getTree(player).zone.endSlime();
         ActivityManager.setActive(player, this);
-        game.spawnSlime();
+        randomizeZone();
+        displayZone(player);
+        CallEvent(new TreeZoneStartEvent(this, zone, player));
+    }
+    public void stopGame() { zone.endSlime(); }
+    public void hitZone(Player player) { zonesHit++; timesHit++; zone.hit(this, player); randomizeZone(); }
+    public void missedZone(Player player) { timesHit++; CallEvent(new TreeZoneMissEvent(this, zone, player)); }
+    public void randomizeZone() { zone.randomizeLocation(); zone.spawnSlime(); zonesTotal++; }
+    public void displayZone(Player player) {
+        //displaySlime(player);
         displayParticle(player);
     }
+    //public void displaySlime(Player player) { }
     public void displayParticle(Player player) {
-        game.display(player);
-        updateExpiration();
+        zone.display(player);
     }
 }
