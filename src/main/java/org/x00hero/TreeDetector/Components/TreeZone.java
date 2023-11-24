@@ -1,7 +1,6 @@
 package org.x00hero.TreeDetector.Components;
 
 import org.bukkit.Location;
-import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
@@ -18,7 +17,6 @@ import static org.x00hero.TreeDetector.Main.CallEvent;
 import static org.x00hero.TreeDetector.Main.log;
 
 public class TreeZone {
-    //Particle.DustTransition dustOptions = new Particle.DustTransition(Color.fromRGB(255, 127, 127), Color.fromRGB(255, 255, 255), 1.0F);
     public final Location initialLocation;
     public Location particleLocation;
     private Slime slime = null; // hitZone & detection
@@ -85,8 +83,9 @@ public class TreeZone {
         double quotientZ = vector.getZ() / divisor;
         return new Vector(quotientX, quotientY, quotientZ);
     }
-    public Location randomizeLocation(@Nullable BlockFace face) { particleLocation = face == null ? getRandomLocation() : getRandomLocation(face); return particleLocation; }
+    public Location randomizeLocation(@Nullable BlockFace face) { particleLocation = face == null ? getRandomLocation() : getRandomLocation(face); PlaySound(); return particleLocation; }
     private final Random random = new Random();
+    private void PlaySound() { particleLocation.getWorld().playSound(particleLocation, sound, soundVolume, soundPitch); }
     public int randomize(int max) { return (int) randomize(0, max); }
     public float randomize(float max) { return randomize(-max, max); }
     public float randomize(float min, float max) { return min + random.nextFloat() * (max - min); }

@@ -2,6 +2,7 @@ package org.x00hero.TreeDetector;
 
 import org.bukkit.Color;
 import org.bukkit.Particle;
+import org.bukkit.Sound;
 import org.bukkit.entity.EntityType;
 
 import static org.x00hero.TreeDetector.Main.plugin;
@@ -10,8 +11,10 @@ public class Config {
     //region Detection
     public static int logsThreshold; // required amount of logs attached
     public static int leavesThreshold; // required amount of leaves attached to be considered a Tree
-    public static int maxSearchDistance; // distance from initial block
+    public static int maxSearchWidth; // distance from initial block (X & Z)
+    public static int maxSearchHeight; // distance from initial block (Y)
     public static int maxSearchableBlocks; // max blocks to iterate through
+    public static boolean materialConsistency; // if leaves match the trunk type
     //endregion
 
     //region Zone
@@ -22,6 +25,9 @@ public class Config {
     public static float constraintX;
     public static float constraintY;
     public static float faceOffset;
+    public static Sound sound;
+    public static float soundPitch;
+    public static float soundVolume;
     //region Particle
     public static int particleAmount;
     public static long updateRate;
@@ -39,7 +45,8 @@ public class Config {
         plugin.reloadConfig();
         logsThreshold = plugin.getConfig().getInt("Detection.logThreshold");
         leavesThreshold = plugin.getConfig().getInt("Detection.leavesThreshold");
-        maxSearchDistance = plugin.getConfig().getInt("Detection.maxSearchDistance");
+        maxSearchWidth = plugin.getConfig().getInt("Detection.maxSearchWidth");
+        maxSearchHeight = plugin.getConfig().getInt("Detection.maxSearchHeight");
         maxSearchableBlocks = plugin.getConfig().getInt("Detection.maxSearchableBlocks");
         particleAmount = plugin.getConfig().getInt("Zone.Particles.amount");
         updateRate = plugin.getConfig().getLong("Zone.Particles.updateRate");
@@ -56,6 +63,9 @@ public class Config {
         constraintX = (float) plugin.getConfig().getDouble("Zone.constraint.x");
         constraintY = (float) plugin.getConfig().getDouble("Zone.constraint.y");
         faceOffset = (float) plugin.getConfig().getDouble("Zone.constraint.faceOffset");
+        sound = Sound.valueOf(plugin.getConfig().getString("Zone.sound.audio"));
+        soundPitch = (float) plugin.getConfig().getDouble("Zone.sound.pitch");
+        soundVolume = (float) plugin.getConfig().getDouble("Zone.sound.volume");
         if(plugin.getConfig().contains("Zone.Particles.options")) {
             if(particle == Particle.REDSTONE) {
                 int R = plugin.getConfig().getInt("Zone.Particles.options.R");

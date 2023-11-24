@@ -1,22 +1,28 @@
-Detection:
+Detection: #materialConsistency checks if leaves match the trunk type
   maxSearchableBlocks: 200
-  maxSearchDistance: 10
+  maxSearchWidth: 5
+  maxSearchHeight: 20
   leavesThreshold: 5
   logThreshold: 4
-Zone: # updateRate means every X ticks update
+  materialConsistency: false
+Zone:
   size: 1
   invisible: true
   entity: SLIME
   colliderName: "TREE-COLLIDER"
+  sound:
+    audio: UI_LOOM_TAKE_RESULT
+    pitch: 0.7
+    volume: 0.2
   constraint:
     x: .5
     y: .5
     faceOffset: 0
-  Particles:
+  Particles: # updateRate means every X ticks update
     amount: 2
     updateRate: 5
     offsetX: 0
-    offsetY: -.2f
+    offsetY: 0.25
     offsetZ: 0
     speed: 0.1
     size: 1

@@ -14,16 +14,22 @@ import java.util.Set;
 
 import static org.x00hero.TreeDetector.Events.TreeDetection.isLogBlock;
 import static org.x00hero.TreeDetector.Main.CallEvent;
+import static org.x00hero.TreeDetector.Main.log;
 
 public class Tree {
     public final Block initialBlock;
     public BlockFace initialFace;
-    private Block bottomTrunk, topTrunk;
+    private String trunkType;
+    private String leafType;
+    private Block bottomTrunk, topTrunk, topLeaf, bottomLeaf;
     public Set<Block> connectedLogs = new HashSet<>();
     public Set<Block> connectedLeaves = new HashSet<>();
     public TreeZone zone;
     public int zonesHit, zonesTotal, timesHit;
-
+    public int blocksSearched;
+    public long created = System.currentTimeMillis();
+    public long completed = -1;
+    public long Result() { return completed - created; }
     public Tree(Block initialBlock, BlockFace face) {
         this.initialBlock = initialBlock;
         this.initialFace = face;
@@ -41,15 +47,27 @@ public class Tree {
         connectedLogs.add(block);
         if(bottomTrunk == null || block.getLocation().getY() < bottomTrunk.getLocation().getY()) bottomTrunk = block;
         if(topTrunk == null || block.getLocation().getY() > topTrunk.getLocation().getY()) topTrunk = block;
+        if(trunkType == null) trunkType = block.getType().name().toLowerCase().replace("_log", "");
+        completed = System.currentTimeMillis();
     }
     public void addLeaf(Block block) {
         connectedLeaves.add(block);
+        if(bottomLeaf == null || block.getLocation().getY() < bottomLeaf.getLocation().getY()) bottomLeaf = block;
+        if(topLeaf == null || block.getLocation().getY() > topTrunk.getLocation().getY()) topLeaf = block;
+        if(leafType == null) leafType = block.getType().name().toLowerCase().replace("_leaves", "");
+        completed = System.currentTimeMillis();
     }
+    public int getTrunkHeight() { return topTrunk.getY() - bottomTrunk.getY(); }
+    public int getHeight() { return topLeaf.getY() - bottomTrunk.getY(); }
     public int logCount() { return connectedLogs.size(); }
     public int leafCount() { return connectedLeaves.size(); }
+    public String getTreeType() { log(trunkType); return trunkType; }
+    public String getLeafType() { return leafType; }
     public Material getTrunkType() { return getBottomTrunk().getType(); }
     public Block getBottomTrunk() { return bottomTrunk; }
     public Block getTopTrunk() { return topTrunk; }
+    public Block getBottomLeaf() { return bottomLeaf; }
+    public Block getTopLeaf() { return topLeaf; }
     public Block getInitialBlock() { return initialBlock; }
     public Block getGround() { return bottomTrunk.getRelative(BlockFace.DOWN); }
     public void startGame(Player player, @Nullable BlockFace face) {

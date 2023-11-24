@@ -12,8 +12,10 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.x00hero.TreeDetector.ActivityManager;
 import org.x00hero.TreeDetector.Components.Tree;
+import org.x00hero.TreeDetector.Events.Tree.TreeHitEvent;
 
 import static org.x00hero.TreeDetector.Config.*;
+import static org.x00hero.TreeDetector.Main.CallEvent;
 import static org.x00hero.TreeDetector.Main.log;
 
 public class TreeDetection implements Listener {
@@ -29,7 +31,6 @@ public class TreeDetection implements Listener {
         if(ActivityManager.isActive(player)) {
             if(!(e.getEntity() instanceof Slime slime)) return;
             Tree tree = ActivityManager.getTree(player);
-            log("Hitting entity");
             Slime activeSlime = tree.zone.getSlime();
             if(activeSlime != null && activeSlime.equals(slime))
                 tree.hitZone(player);
@@ -47,31 +48,43 @@ public class TreeDetection implements Listener {
         if(ActivityManager.isActive(player)) {
             Tree activeTree = ActivityManager.getTree(player);
             if(activeTree.getBottomTrunk().equals(tree.getBottomTrunk())) { // similar trees
+                CallEvent(new TreeHitEvent(activeTree, player));
                 if(activeTree.zone.isExpired()) activeTree.randomizeZone();
                 else activeTree.missedZone(player); // player missed slime
             } else tree.startGame(player, e.getBlockFace()); // swapped trees
         } else tree.startGame(player, e.getBlockFace()); // first time punching
+        CallEvent(new TreeHitEvent(tree, player));
     }
 
     private static final BlockFace[] searchDirections = new BlockFace[]{BlockFace.NORTH, BlockFace.EAST, BlockFace.SOUTH, BlockFace.WEST, BlockFace.UP, BlockFace.DOWN};
     private boolean isTree(Tree result) { return result.logCount() > logsThreshold && result.leafCount() > leavesThreshold; }
-    private static boolean isValidBlock(Block block) { return isLogBlock(block) || isLeafBlock(block); }
+    private static boolean isValidBlock(Block block) { return (isLogBlock(block) || isLeafBlock(block)); }
     public static boolean isLogBlock(Block block) { return block.getType().name().toLowerCase().endsWith("log"); }
     public static boolean isLeafBlock(Block block) { return block.getType().name().toLowerCase().endsWith("leaves"); }
-    public Tree getTree(Block block, BlockFace initialFace) { return findConnectedBlocks(block, initialFace, maxSearchDistance); }
-    public static Tree findConnectedBlocks(Block initialBlock, BlockFace initialFace, int maxSearchDistance) {
+    public static boolean isSameType(Block block, String typePrefix) { return block.getType().name().toLowerCase().startsWith(typePrefix); }
+    public Tree getTree(Block block, BlockFace initialFace) { return findConnectedBlocks(block, initialFace, maxSearchableBlocks); }
+    public static Tree findConnectedBlocks(Block initialBlock, BlockFace initialFace, int maxSearchableBlocks) {
         Tree result = new Tree(initialBlock, initialFace);
-        searchConnectedBlocks(initialBlock, result, maxSearchDistance);
+        searchConnectedBlocks(initialBlock, result, maxSearchableBlocks);
         return result;
     }
-    private static void searchConnectedBlocks(Block currentBlock, Tree result, int remainingSearchDistance) {
-        if (currentBlock.getLocation().distance(result.initialBlock.getLocation()) > maxSearchDistance) return;
+    private static void searchConnectedBlocks(Block currentBlock, Tree result, int searchableBlocks) {
+        int currentX = currentBlock.getX();
+        int currentY = currentBlock.getY();
+        int currentZ = currentBlock.getZ();
+        int initialX = result.initialBlock.getX();
+        int initialY = result.initialBlock.getY();
+        int initialZ = result.initialBlock.getZ();
+        result.blocksSearched++;
+        if (Math.abs(currentX - initialX) > maxSearchWidth || Math.abs(currentZ - initialZ) > maxSearchWidth
+                || Math.abs(currentY - initialY) > maxSearchHeight || searchableBlocks <= 0
+                || (!isSameType(currentBlock, result.getTreeType()) && materialConsistency)) return;
         for (BlockFace face : searchDirections) {
             Block neighbor = currentBlock.getRelative(face);
             if (isValidBlock(neighbor) && !result.connectedLogs.contains(neighbor) && !result.connectedLeaves.contains(neighbor)) {
                 if (isLogBlock(neighbor)) result.addLog(neighbor);
                  else if (isLeafBlock(neighbor)) result.addLeaf(neighbor);
-                searchConnectedBlocks(neighbor, result, remainingSearchDistance - 1);
+                searchConnectedBlocks(neighbor, result, searchableBlocks - 1);
             }
         }
     }
