@@ -2,3 +2,6 @@ name: TreeDetector
 version: '${project.version}'
 main: org.x00hero.TreeDetector.Main
 api-version: '1.18'
+commands:
+  tree-detector:
+    description: Main base command

@@ -9,14 +9,15 @@ import org.x00hero.TreeDetector.Events.Tree.Zone.TreeZoneExpiredEvent;
 import java.util.HashMap;
 import java.util.UUID;
 
+import static org.x00hero.TreeDetector.Config.updateRate;
 import static org.x00hero.TreeDetector.Main.CallEvent;
 
 public class ActivityManager {
     private static HashMap<UUID, Tree> activeTrees = new HashMap<>();
-    private static long expirationCheck = 5L;
+    public static int schedulerID;
 
     public static void ExpireCheck() {
-        int id = Bukkit.getScheduler().scheduleSyncRepeatingTask( Main.plugin, () -> {
+        schedulerID = Bukkit.getScheduler().scheduleSyncRepeatingTask( Main.plugin, () -> {
             for(UUID uuid : activeTrees.keySet()) {
                 Tree tree = activeTrees.get(uuid);
                 Player player = Bukkit.getPlayer(uuid);
@@ -24,7 +25,7 @@ public class ActivityManager {
                 else if(tree.zone.isExpired()) setExpired(player, tree, tree.zone);
                 else tree.displayParticle(player);
             }
-        }, 0L, expirationCheck);
+        }, 0L, updateRate);
     }
 
     public static boolean isActive(Player player) { return isActive(player.getUniqueId()); }

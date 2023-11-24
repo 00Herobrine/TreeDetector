@@ -9,30 +9,40 @@ import org.x00hero.TreeDetector.Test.TreeTest;
 import java.util.logging.Level;
 
 public final class Main extends JavaPlugin {
-    private final String prefix = "["+ getDescription().getName() + "] ";
     public static Main plugin;
+    private final String prefix = "["+ getDescription().getName() + "] ";
     @Override
     public void onEnable() {
         plugin = this;
-        // Plugin startup logic
+        getConfig().options().copyDefaults(true);
+        saveConfig();
+        Config.Load();
+        registerCommands();
         registerEvents();
         ActivityManager.ExpireCheck();
         log(prefix + "Trees will be exterminated. (Enabled)");
     }
 
+    public static void Reload() {
+        Bukkit.getScheduler().cancelTask(ActivityManager.schedulerID);
+        Config.Load();
+        ActivityManager.ExpireCheck();
+        log(plugin.prefix + "Trees thought they were safe. (Reload)");
+    }
+
     @Override
     public void onDisable() {
-        // Plugin shutdown logic
+        Bukkit.getScheduler().cancelTask(ActivityManager.schedulerID);
         log(prefix + "Trees have been spared. (Disabled)");
     }
 
+    public void registerCommands() { getCommand("tree-detector").setExecutor(new CommandController()); }
     public void registerEvents() {
         Bukkit.getPluginManager().registerEvents(new TreeDetection(), this);
         Bukkit.getPluginManager().registerEvents(new TreeTest(), this);
+        Bukkit.getPluginManager().registerEvents(new CommandController(), this);
     }
     public static void log(String message) { log(Level.INFO, message); }
-    public static void log(Level level, String message) {
-        Bukkit.getLogger().log(level, message);
-    }
+    public static void log(Level level, String message) { Bukkit.getLogger().log(level, message); }
     public static void CallEvent(Event event) { Bukkit.getPluginManager().callEvent(event); }
 }

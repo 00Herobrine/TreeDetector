@@ -41,7 +41,7 @@ public class Tree {
     public Material getTrunkType() { return getBottomTrunk().getType(); }
     public Block getBottomTrunk() { return bottomTrunk; }
     public Block getTopTrunk() { return topTrunk; }
-    public Block getInitialBlock;
+    public Block getInitialBlock() { return initialBlock; }
     public Block getGround() { return bottomTrunk.getRelative(BlockFace.DOWN); }
     public void startGame(Player player) {
         if(ActivityManager.isActive(player)) ActivityManager.getTree(player).zone.endSlime();

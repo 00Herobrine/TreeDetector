@@ -1,8 +1,6 @@
 package org.x00hero.TreeDetector.Components;
 
-import org.bukkit.Color;
 import org.bukkit.Location;
-import org.bukkit.Particle;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Slime;
@@ -11,17 +9,11 @@ import org.x00hero.TreeDetector.Events.Tree.Zone.TreeZoneHitEvent;
 
 import java.util.Random;
 
+import static org.x00hero.TreeDetector.Config.*;
 import static org.x00hero.TreeDetector.Main.CallEvent;
 
 public class TreeZone {
-    private Particle particle = Particle.REDSTONE;
-    Particle.DustTransition dustOptions = new Particle.DustTransition(Color.fromRGB(255, 127, 127), Color.fromRGB(255, 255, 255), 1.0F);
-    int particleCount = 10;
-    double offsetX = 0;
-    double offsetY = -.2f;
-    double offsetZ = 0;
-    double speed = 0.1;
-    int zoneSize = 1;
+    //Particle.DustTransition dustOptions = new Particle.DustTransition(Color.fromRGB(255, 127, 127), Color.fromRGB(255, 255, 255), 1.0F);
     public final Location initialLocation;
     public Location particleLocation;
     private Slime slime = null; // hitZone & detection
@@ -43,8 +35,8 @@ public class TreeZone {
         if(slimeClass == null) return;
         Consumer<Slime> preSpawnFunction = slimer -> {
             slimer.setSize(zoneSize);
-            slimer.setInvisible(true);
-            slimer.setCustomName("TREE-COLLIDER");
+            slimer.setInvisible(invisible);
+            slimer.setCustomName(colliderName);
             slimer.setCustomNameVisible(false);
             //slimer.setInvulnerable(true);
             slimer.setSilent(true);
@@ -66,5 +58,5 @@ public class TreeZone {
     public float randomizeHorizontal() { return randomize(-0.5f, 0.5f); }
     private final Random random = new Random();
     public float randomize(float min, float max) { return min + random.nextFloat() * (max - min); }
-    public void display(Player player) { player.spawnParticle(particle, particleLocation, particleCount, offsetX, offsetY, offsetZ, speed, dustOptions); /*log("Spawned particles @ " + particleLocation);*/ }
+    public void display(Player player) { player.spawnParticle(particle, particleLocation, particleAmount, offsetX, offsetY, offsetZ, speed, dustOptions); /*log("Spawned particles @ " + particleLocation);*/ }
 }

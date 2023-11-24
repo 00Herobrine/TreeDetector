@@ -1,0 +1,23 @@
+Detection:
+  maxSearchableBlocks: 200
+  maxSearchDistance: 10
+  leavesThreshold: 5
+  logThreshold: 4
+Zone: # updateRate means every X ticks update
+  size: 1
+  invisible: true
+  entity: SLIME
+  colliderName: "TREE-COLLIDER"
+  Particles:
+    amount: 2
+    updateRate: 5
+    offsetX: 0
+    offsetY: -.2f
+    offsetZ: 0
+    speed: 0.1
+    size: 1
+    type: REDSTONE
+    options: # Required if particle has optional parameters ex redstone
+      R: 255
+      G: 127
+      B: 127

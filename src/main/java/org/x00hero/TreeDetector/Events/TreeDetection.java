@@ -13,17 +13,14 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.x00hero.TreeDetector.ActivityManager;
 import org.x00hero.TreeDetector.Components.Tree;
 
+import static org.x00hero.TreeDetector.Config.*;
 import static org.x00hero.TreeDetector.Main.log;
 
 public class TreeDetection implements Listener {
-    int logsThreshold = 3;
-    int leavesThreshold = 2; // amount of leaves attached required to be considered a "tree"
-    static int maxSearchDistance = 10; // distance from initial block
-
     @EventHandler
     public void Damage(EntityDamageEvent e) {
         if(e.getCause() == EntityDamageEvent.DamageCause.SUFFOCATION && e.getEntity() instanceof Slime slime)
-            if(slime.getCustomName() != null && slime.getCustomName().equalsIgnoreCase("TREE-COLLIDER")) e.setCancelled(true);
+            if(slime.getCustomName() != null && slime.getCustomName().equals(colliderName)) e.setCancelled(true);
     }
 
     @EventHandler
@@ -53,7 +50,7 @@ public class TreeDetection implements Listener {
                 if(activeTree.zone.isExpired()) activeTree.randomizeZone();
                 else activeTree.missedZone(player); // player missed slime
             } else result.startGame(player); // swapped trees
-        } else result.startGame(player);
+        } else result.startGame(player); // first time punching
     }
 
     private static final BlockFace[] searchDirections = new BlockFace[]{BlockFace.NORTH, BlockFace.EAST, BlockFace.SOUTH, BlockFace.WEST, BlockFace.UP, BlockFace.DOWN};
