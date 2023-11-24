@@ -8,6 +8,10 @@ Zone: # updateRate means every X ticks update
   invisible: true
   entity: SLIME
   colliderName: "TREE-COLLIDER"
+  constraint:
+    x: .5
+    y: .5
+    faceOffset: 0
   Particles:
     amount: 2
     updateRate: 5

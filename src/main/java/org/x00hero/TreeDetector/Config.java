@@ -19,6 +19,9 @@ public class Config {
     public static boolean invisible;
     public static EntityType entityType;
     public static String colliderName;
+    public static float constraintX;
+    public static float constraintY;
+    public static float faceOffset;
     //region Particle
     public static int particleAmount;
     public static long updateRate;
@@ -44,12 +47,15 @@ public class Config {
         invisible = plugin.getConfig().getBoolean("Zone.invisible");
         entityType = EntityType.valueOf(plugin.getConfig().getString("Zone.entity"));
         colliderName = plugin.getConfig().getString("Zone.colliderName");
-        offsetX = plugin.getConfig().getInt("Zone.Particles.offsetX");
-        offsetY = plugin.getConfig().getInt("Zone.Particles.offsetY");
-        offsetZ = plugin.getConfig().getInt("Zone.Particles.offsetZ");
+        offsetX = plugin.getConfig().getDouble("Zone.Particles.offsetX");
+        offsetY = plugin.getConfig().getDouble("Zone.Particles.offsetY");
+        offsetZ = plugin.getConfig().getDouble("Zone.Particles.offsetZ");
         speed = plugin.getConfig().getDouble("Zone.Particles.speed");
         particle = Particle.valueOf(plugin.getConfig().getString("Zone.Particles.type"));
         particleSize = (float) plugin.getConfig().getDouble("Zone.Particles.size");
+        constraintX = (float) plugin.getConfig().getDouble("Zone.constraint.x");
+        constraintY = (float) plugin.getConfig().getDouble("Zone.constraint.y");
+        faceOffset = (float) plugin.getConfig().getDouble("Zone.constraint.faceOffset");
         if(plugin.getConfig().contains("Zone.Particles.options")) {
             if(particle == Particle.REDSTONE) {
                 int R = plugin.getConfig().getInt("Zone.Particles.options.R");

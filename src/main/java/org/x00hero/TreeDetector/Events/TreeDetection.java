@@ -42,15 +42,15 @@ public class TreeDetection implements Listener {
         Player player = e.getPlayer();
         Block block = e.getClickedBlock();
         if(block == null || !isLogBlock(block)) return;
-        Tree result = getTree(block);
-        if(!isTree(result)) return;
+        Tree tree = getTree(block, e.getBlockFace());
+        if(!isTree(tree)) return;
         if(ActivityManager.isActive(player)) {
             Tree activeTree = ActivityManager.getTree(player);
-            if(activeTree.getBottomTrunk().equals(result.getBottomTrunk())) { // similar trees
+            if(activeTree.getBottomTrunk().equals(tree.getBottomTrunk())) { // similar trees
                 if(activeTree.zone.isExpired()) activeTree.randomizeZone();
                 else activeTree.missedZone(player); // player missed slime
-            } else result.startGame(player); // swapped trees
-        } else result.startGame(player); // first time punching
+            } else tree.startGame(player, e.getBlockFace()); // swapped trees
+        } else tree.startGame(player, e.getBlockFace()); // first time punching
     }
 
     private static final BlockFace[] searchDirections = new BlockFace[]{BlockFace.NORTH, BlockFace.EAST, BlockFace.SOUTH, BlockFace.WEST, BlockFace.UP, BlockFace.DOWN};
@@ -58,9 +58,9 @@ public class TreeDetection implements Listener {
     private static boolean isValidBlock(Block block) { return isLogBlock(block) || isLeafBlock(block); }
     public static boolean isLogBlock(Block block) { return block.getType().name().toLowerCase().endsWith("log"); }
     public static boolean isLeafBlock(Block block) { return block.getType().name().toLowerCase().endsWith("leaves"); }
-    public Tree getTree(Block block) { return findConnectedBlocks(block, maxSearchDistance); }
-    public static Tree findConnectedBlocks(Block initialBlock, int maxSearchDistance) {
-        Tree result = new Tree(initialBlock);
+    public Tree getTree(Block block, BlockFace initialFace) { return findConnectedBlocks(block, initialFace, maxSearchDistance); }
+    public static Tree findConnectedBlocks(Block initialBlock, BlockFace initialFace, int maxSearchDistance) {
+        Tree result = new Tree(initialBlock, initialFace);
         searchConnectedBlocks(initialBlock, result, maxSearchDistance);
         return result;
     }
