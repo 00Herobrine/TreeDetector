@@ -3,5 +3,5 @@ version: '${project.version}'
 main: org.x00hero.TreeDetector.Main
 api-version: '1.18'
 commands:
-  tree-detector:
+  treedetector:
     description: Main base command

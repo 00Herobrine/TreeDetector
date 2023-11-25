@@ -25,6 +25,6 @@ public class TreeTest implements Listener {
         e.getPlayer().sendMessage("Hit a tree that is " + tree.getHeight() + " blocks tall.");
         e.getPlayer().sendMessage("Trunks Top: " + tree.getTopTrunk().getY() + " Bottom: " + tree.getBottomTrunk().getY());
         e.getPlayer().sendMessage("Leaves Top: " + tree.getTopLeaf().getY() + " Bottom: " + tree.getBottomLeaf().getY());
-        e.getPlayer().sendMessage("Search Took " + tree.Result() + "ms with " + tree.blocksSearched + " blocks searched." );
+        e.getPlayer().sendMessage("Search Took " + tree.Result() + "ms with " + tree.calls + " blocks searched. Added " + (tree.connectedLeaves.size() + tree.connectedLogs.size()) + " blocks.");
     }
 }

@@ -14,7 +14,6 @@ import java.util.Random;
 
 import static org.x00hero.TreeDetector.Config.*;
 import static org.x00hero.TreeDetector.Main.CallEvent;
-import static org.x00hero.TreeDetector.Main.log;
 
 public class TreeZone {
     public final Location initialLocation;
@@ -46,7 +45,6 @@ public class TreeZone {
             slimer.setInvisible(invisible);
             slimer.setCustomName(colliderName);
             slimer.setCustomNameVisible(false);
-            //slimer.setInvulnerable(true);
             slimer.setSilent(true);
             slimer.setLootTable(null);
             slimer.setAI(false);
@@ -64,17 +62,14 @@ public class TreeZone {
     public Location getRandomLocation() { return getRandomLocation(initialLocation, new BlockFace[]{BlockFace.NORTH, BlockFace.EAST, BlockFace.SOUTH, BlockFace.WEST} ); }
     public Location getRandomLocation(BlockFace blockFace) { return getRandomLocation(initialLocation, new BlockFace[]{blockFace}); }
     public Location getRandomLocation(Location baseLocation, BlockFace[] directions) {
-        log("Initial: " + baseLocation);
         Location randomLocation = baseLocation.clone();
         randomLocation.add(0.5, 0.5, 0.5); // centralize location
         BlockFace direction = directions[randomize(directions.length - 1)];
         randomLocation.add(divideVector(direction.getDirection(), 2));
-        log("Initial + Direction: " + direction + " | " + randomLocation);
         double x = randomize(constraintX);
         double y = randomize(constraintY);
         if(direction == BlockFace.EAST || direction == BlockFace.WEST) randomLocation.add(offsetZ, y, x);
         else randomLocation.add(x, y, offsetZ);
-        log("Random: LEFT:" + x + " UP: " + y + " DIRECTION: " + direction + " | " + randomLocation);
         return randomLocation;
     }
     public Vector divideVector(Vector vector, double divisor) {

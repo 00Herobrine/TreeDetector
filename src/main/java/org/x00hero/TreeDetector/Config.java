@@ -13,7 +13,7 @@ public class Config {
     public static int leavesThreshold; // required amount of leaves attached to be considered a Tree
     public static int maxSearchWidth; // distance from initial block (X & Z)
     public static int maxSearchHeight; // distance from initial block (Y)
-    public static int maxSearchableBlocks; // max blocks to iterate through
+    public static int maxSearchCalls; // max blocks to iterate through
     public static boolean materialConsistency; // if leaves match the trunk type
     //endregion
 
@@ -47,7 +47,8 @@ public class Config {
         leavesThreshold = plugin.getConfig().getInt("Detection.leavesThreshold");
         maxSearchWidth = plugin.getConfig().getInt("Detection.maxSearchWidth");
         maxSearchHeight = plugin.getConfig().getInt("Detection.maxSearchHeight");
-        maxSearchableBlocks = plugin.getConfig().getInt("Detection.maxSearchableBlocks");
+        maxSearchCalls = plugin.getConfig().getInt("Detection.maxSearchCalls");
+        materialConsistency = plugin.getConfig().getBoolean("Detection.materialConsistency");
         particleAmount = plugin.getConfig().getInt("Zone.Particles.amount");
         updateRate = plugin.getConfig().getLong("Zone.Particles.updateRate");
         zoneSize = plugin.getConfig().getInt("Zone.size");

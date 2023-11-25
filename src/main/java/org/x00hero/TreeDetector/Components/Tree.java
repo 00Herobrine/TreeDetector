@@ -12,9 +12,9 @@ import javax.annotation.Nullable;
 import java.util.HashSet;
 import java.util.Set;
 
+import static org.x00hero.TreeDetector.Events.TreeDetection.isLeafBlock;
 import static org.x00hero.TreeDetector.Events.TreeDetection.isLogBlock;
 import static org.x00hero.TreeDetector.Main.CallEvent;
-import static org.x00hero.TreeDetector.Main.log;
 
 public class Tree {
     public final Block initialBlock;
@@ -24,9 +24,11 @@ public class Tree {
     private Block bottomTrunk, topTrunk, topLeaf, bottomLeaf;
     public Set<Block> connectedLogs = new HashSet<>();
     public Set<Block> connectedLeaves = new HashSet<>();
+    // Mini-Game
     public TreeZone zone;
     public int zonesHit, zonesTotal, timesHit;
-    public int blocksSearched;
+    // Performance Monitoring
+    public int calls;
     public long created = System.currentTimeMillis();
     public long completed = -1;
     public long Result() { return completed - created; }
@@ -39,9 +41,6 @@ public class Tree {
     }
     public Tree(Block initialBlock) {
         this.initialBlock = initialBlock;
-        if(isLogBlock(initialBlock)) addLog(initialBlock);
-        zone = new TreeZone(initialBlock.getLocation());
-        zone.updateExpiration();
     }
     public void addLog(Block block) {
         connectedLogs.add(block);
@@ -61,7 +60,7 @@ public class Tree {
     public int getHeight() { return topLeaf.getY() - bottomTrunk.getY(); }
     public int logCount() { return connectedLogs.size(); }
     public int leafCount() { return connectedLeaves.size(); }
-    public String getTreeType() { log(trunkType); return trunkType; }
+    public String getTreeType() { return trunkType; }
     public String getLeafType() { return leafType; }
     public Material getTrunkType() { return getBottomTrunk().getType(); }
     public Block getBottomTrunk() { return bottomTrunk; }
@@ -71,6 +70,7 @@ public class Tree {
     public Block getInitialBlock() { return initialBlock; }
     public Block getGround() { return bottomTrunk.getRelative(BlockFace.DOWN); }
     public void startGame(Player player, @Nullable BlockFace face) {
+        if(zone == null) zone = new TreeZone(initialBlock.getLocation(), face);
         if(ActivityManager.isActive(player)) ActivityManager.getTree(player).zone.endSlime();
         ActivityManager.setActive(player, this);
         randomizeZone(face);
@@ -89,5 +89,12 @@ public class Tree {
     //public void displaySlime(Player player) { }
     public void displayParticle(Player player) {
         zone.display(player);
+    }
+
+    public boolean addBlock(Block block) {
+        if(connectedLogs.contains(block) || connectedLeaves.contains(block)) return false;
+        if(isLogBlock(block)) { addLog(block); return true; }
+        else if(isLeafBlock(block)) { addLeaf(block); return true; }
+        return false;
     }
 }
