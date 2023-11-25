@@ -20,6 +20,7 @@ public class ActivityManager {
         schedulerID = Bukkit.getScheduler().scheduleSyncRepeatingTask( Main.plugin, () -> {
             for(UUID uuid : activeTrees.keySet()) {
                 Tree tree = activeTrees.get(uuid);
+                if(tree.zone == null) continue;
                 Player player = Bukkit.getPlayer(uuid);
                 if(player == null) setInactive(uuid);
                 else if(tree.zone.isExpired()) setExpired(player, tree, tree.zone);

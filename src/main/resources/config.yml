@@ -10,6 +10,7 @@ Zone:
   invisible: true
   entity: SLIME
   colliderName: "TREE-COLLIDER"
+  timeout: 60 # in seconds
   sound: # Audio can be any sound in Minecraft's library
     audio: UI_LOOM_TAKE_RESULT
     pitch: 0.7

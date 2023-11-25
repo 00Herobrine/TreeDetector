@@ -45,7 +45,7 @@ public class TreeDetection implements Listener {
         Player player = e.getPlayer();
         Block block = e.getClickedBlock();
         if(block == null || !isLogBlock(block)) return;
-        Tree tree = getTree(block, maxSearchCalls);
+        Tree tree = getTree(block);
         if(!isTree(tree)) return;
         if(ActivityManager.isActive(player)) {
             Tree activeTree = ActivityManager.getTree(player);
@@ -59,14 +59,14 @@ public class TreeDetection implements Listener {
     }
 
     private static final BlockFace[] searchDirections = new BlockFace[]{BlockFace.NORTH, BlockFace.EAST, BlockFace.SOUTH, BlockFace.WEST, BlockFace.UP, BlockFace.DOWN};
-    private static boolean isTree(Tree result) { return result.logCount() > logsThreshold && result.leafCount() > leavesThreshold; }
+    private static boolean isTree(Tree result) { return result != null && result.logCount() > logsThreshold && result.leafCount() > leavesThreshold; }
     private static boolean isValidBlock(Block block) { return (isLogBlock(block) || isLeafBlock(block)); }
     public static boolean isLogBlock(Block block) { return block.getType().name().toLowerCase().endsWith("log"); }
     public static boolean isLeafBlock(Block block) { return block.getType().name().toLowerCase().endsWith("leaves"); }
     public static boolean isSameType(Block block, String typePrefix) { return block.getType().name().toLowerCase().startsWith(typePrefix); }
     public static Tree getTree(Block block) { return (isValidBlock(block)) ? getTree(block, maxSearchCalls) : null; }
-    private static Tree getTree(Block currentBlock, int searchableBlocks) { Tree tree = new Tree(currentBlock); attachTreeBlocks(currentBlock, searchableBlocks, tree, new ArrayList<>()); return tree; }
-    private static void attachTreeBlocks(Block currentBlock, int searchableBlocks, Tree result, ArrayList<Location> searched) {
+    private static Tree getTree(Block currentBlock, int maxCalls) { Tree tree = new Tree(currentBlock); attachTreeBlocks(currentBlock, tree, maxCalls, new ArrayList<>()); return tree; }
+    private static void attachTreeBlocks(Block currentBlock, Tree result, int maxCalls, ArrayList<Location> searched) {
         result.calls++;
         if (searched.contains(currentBlock.getLocation())) return;
         searched.add(currentBlock.getLocation());
@@ -77,15 +77,16 @@ public class TreeDetection implements Listener {
         int initialX = result.initialBlock.getX();
         int initialY = result.initialBlock.getY();
         int initialZ = result.initialBlock.getZ();
-        if (Math.abs(currentX - initialX) > maxSearchWidth || Math.abs(currentZ - initialZ) > maxSearchWidth
-                || Math.abs(currentY - initialY) > maxSearchHeight || searchableBlocks <= 0
+        if (maxSearchHeight != -1 && (Math.abs(currentX - initialX) > maxSearchWidth || Math.abs(currentZ - initialZ) > maxSearchWidth)
+                || (maxSearchHeight != -1 && Math.abs(currentY - initialY) > maxSearchHeight)
                 || (!isSameType(currentBlock, result.getTreeType()) && materialConsistency)) {
             return;
         }
         for (BlockFace face : searchDirections) {
             Block neighbor = currentBlock.getRelative(face);
-            if (searched.contains(neighbor.getLocation())) continue;
-            attachTreeBlocks(neighbor, searchableBlocks - 1, result, searched);
+            if(result.calls >= maxCalls) return;
+            if (searched.contains(neighbor.getLocation()) || !isValidBlock(neighbor)) continue;
+            attachTreeBlocks(neighbor, result, maxCalls, searched);
         }
     }
 }

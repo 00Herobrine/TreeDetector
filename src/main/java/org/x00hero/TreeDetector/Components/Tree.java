@@ -18,7 +18,6 @@ import static org.x00hero.TreeDetector.Main.CallEvent;
 
 public class Tree {
     public final Block initialBlock;
-    public BlockFace initialFace;
     private String trunkType;
     private String leafType;
     private Block bottomTrunk, topTrunk, topLeaf, bottomLeaf;
@@ -32,13 +31,6 @@ public class Tree {
     public long created = System.currentTimeMillis();
     public long completed = -1;
     public long Result() { return completed - created; }
-    public Tree(Block initialBlock, BlockFace face) {
-        this.initialBlock = initialBlock;
-        this.initialFace = face;
-        if(isLogBlock(initialBlock)) addLog(initialBlock);
-        zone = new TreeZone(initialBlock.getLocation());
-        zone.updateExpiration();
-    }
     public Tree(Block initialBlock) {
         this.initialBlock = initialBlock;
     }
@@ -81,7 +73,7 @@ public class Tree {
     public void hitZone(Player player) { zonesHit++; timesHit++; zone.hit(this, player); randomizeZone(); }
     public void missedZone(Player player) { timesHit++; CallEvent(new TreeZoneMissEvent(this, zone, player)); }
     public void randomizeZone() { randomizeZone(null); }
-    public void randomizeZone(@Nullable BlockFace face) { zone.randomizeLocation(face); zone.spawnSlime(); zonesTotal++; }
+    public void randomizeZone(@Nullable BlockFace face) { zone.randomizeLocation(face); zone.spawnSlime(); zone.updateExpiration(); zonesTotal++; }
     public void displayZone(Player player) {
         //displaySlime(player);
         displayParticle(player);

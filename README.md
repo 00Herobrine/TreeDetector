@@ -7,7 +7,6 @@ A Tree is a new way of handling interactions with trees to an extent. Access a `
 ```java
 public class Tree {
     public final Block initialBlock;
-    public BlockFace initialFace;
     private String trunkType;
     private String leafType;
     private Block bottomTrunk, topTrunk, topLeaf, bottomLeaf;
@@ -55,6 +54,7 @@ Zone:
   invisible: true
   entity: SLIME
   colliderName: "TREE-COLLIDER"
+  timeout: 60 # in seconds
   sound: # Audio can be any sound in Minecraft's library
     audio: UI_LOOM_TAKE_RESULT
     pitch: 0.7

@@ -28,6 +28,7 @@ public class Config {
     public static Sound sound;
     public static float soundPitch;
     public static float soundVolume;
+    public static int zoneTimeout;
     //region Particle
     public static int particleAmount;
     public static long updateRate;
@@ -52,6 +53,7 @@ public class Config {
         particleAmount = plugin.getConfig().getInt("Zone.Particles.amount");
         updateRate = plugin.getConfig().getLong("Zone.Particles.updateRate");
         zoneSize = plugin.getConfig().getInt("Zone.size");
+        zoneTimeout = plugin.getConfig().getInt("Zone.timeout");
         invisible = plugin.getConfig().getBoolean("Zone.invisible");
         entityType = EntityType.valueOf(plugin.getConfig().getString("Zone.entity"));
         colliderName = plugin.getConfig().getString("Zone.colliderName");

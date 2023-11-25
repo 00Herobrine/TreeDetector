@@ -36,7 +36,7 @@ public final class Main extends JavaPlugin {
         log(prefix + "Trees have been spared. (Disabled)");
     }
 
-    public void registerCommands() { getCommand("tree-detector").setExecutor(new CommandController()); }
+    public void registerCommands() { getCommand("treedetector").setExecutor(new CommandController()); }
     public void registerEvents() {
         Bukkit.getPluginManager().registerEvents(new TreeDetection(), this);
         Bukkit.getPluginManager().registerEvents(new TreeTest(), this);

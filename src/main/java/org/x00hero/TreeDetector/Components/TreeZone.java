@@ -57,7 +57,7 @@ public class TreeZone {
         slime = null;
     }
     public void hit(Tree tree, Player player) { timeHit = System.currentTimeMillis(); updateExpiration(); endSlime(); CallEvent(new TreeZoneHitEvent(tree,this, player)); }
-    public void updateExpiration() { expirationTime = System.currentTimeMillis() + (60 * 1000); }
+    public void updateExpiration() { expirationTime = System.currentTimeMillis() + (zoneTimeout * 1000L); }
     public boolean isExpired() { return System.currentTimeMillis() >= expirationTime; }
     public Location getRandomLocation() { return getRandomLocation(initialLocation, new BlockFace[]{BlockFace.NORTH, BlockFace.EAST, BlockFace.SOUTH, BlockFace.WEST} ); }
     public Location getRandomLocation(BlockFace blockFace) { return getRandomLocation(initialLocation, new BlockFace[]{blockFace}); }
