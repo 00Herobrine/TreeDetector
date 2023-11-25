@@ -30,7 +30,7 @@ To get a tree it's as simple `Tree tree = TreeDetection.getTree(Block);` it will
 ### TreeHitEvent
 This will be called whenever a player hits a tree that meets the **_leaves_** & **_log_** **Threshold** specified in the Config
 ```java
-public class EventHandler() implements Listener {
+public class EventHandler implements Listener {
     @EventHandler
     public onTreeHit(TreeHitEvent e) {
         Tree tree = e.getTree();
