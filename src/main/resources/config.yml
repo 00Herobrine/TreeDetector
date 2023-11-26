@@ -2,19 +2,17 @@ Detection: # Raising the # for any of the maxSearch can improve detection at the
   maxSearchCalls: 250 # total calls allowed per Tree detection, the more, the better but not always the answer
   maxSearchWidth: 5 # width radius for search
   maxSearchHeight: 20 # height radius for search
-  leavesThreshold: 5 # required leaves required for a valid Tree
-  logThreshold: 4 # required logs required for a valid Tree
-  materialConsistency: false # if the leaves should match the log type
+  leavesThreshold: 6 # required leaves required for a valid Tree
+  logThreshold: 3 # required logs required for a valid Tree
+  expirationCheckRate: 20
+  materialConsistency: true # if the leaves should match the log type
+  connectHives: true
 Zone:
   size: 1
   invisible: true
   entity: SLIME
   colliderName: "TREE-COLLIDER"
   timeout: 60 # in seconds
-  sound: # Audio can be any sound in Minecraft's library
-    audio: UI_LOOM_TAKE_RESULT
-    pitch: 0.7
-    volume: 0.2
   constraint:
     x: .5
     y: .5
@@ -32,3 +30,23 @@ Zone:
       R: 255
       G: 127
       B: 127
+Sound: # Audio can be any sound in Minecraft's library
+  Collapse:
+    audio:
+      - ITEM_CROSSBOW_QUICK_CHARGE_1
+      - ITEM_CROSSBOW_QUICK_CHARGE_2
+      - ITEM_CROSSBOW_QUICK_CHARGE_3
+      - ITEM_CROSSBOW_LOADING_MIDDLE
+      - ITEM_CROSSBOW_LOADING_START
+    volume: 10
+    pitch: 0.7
+    pitchMod: 0.025
+    chance: 1 # Chance being 1:X amount (X = chance)
+  Land:
+    volume: 1
+    pitch: 0.7
+    chance: 3
+  Zone: # Audio can be any sound in Minecraft's library
+    audio: UI_LOOM_TAKE_RESULT
+    pitch: 0.7
+    volume: 0.2

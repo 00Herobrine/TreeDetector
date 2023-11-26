@@ -15,6 +15,8 @@ import org.x00hero.TreeDetector.Trees.TreeFunctions;
 
 import java.util.logging.Level;
 
+import static org.x00hero.TreeDetector.Controllers.ActivityController.schedulers;
+
 public final class Main extends JavaPlugin {
     public static Main plugin;
     private final String prefix = "["+ getDescription().getName() + "] ";
@@ -26,21 +28,20 @@ public final class Main extends JavaPlugin {
         Config.Load();
         registerCommands();
         registerEvents();
-        ActivityController.ExpireCheck();
-        TreeFunctions.DDayCheck();
+        StartSchedulers();
         log(prefix + "Trees will be exterminated. (Enabled)");
     }
 
     public static void Reload() {
-        Bukkit.getScheduler().cancelTask(ActivityController.schedulerID);
+        CancelSchedulers();
         Config.Load();
-        ActivityController.ExpireCheck();
+        StartSchedulers();
         log(plugin.prefix + "Trees thought they were safe. (Reload)");
     }
 
     @Override
     public void onDisable() {
-        Bukkit.getScheduler().cancelTask(ActivityController.schedulerID);
+        CancelSchedulers();
         log(prefix + "Trees have been spared. (Disabled)");
     }
 
@@ -59,4 +60,10 @@ public final class Main extends JavaPlugin {
         double quotientZ = vector.getZ() / divisor;
         return new Vector(quotientX, quotientY, quotientZ);
     }
+    public static void StartSchedulers() {
+        ActivityController.ExpireCheck();
+        ActivityController.ParticleCheck();
+        TreeFunctions.DDayCheck();
+    }
+    public static void CancelSchedulers() { for(int id : schedulers) Bukkit.getScheduler().cancelTask(id); }
 }

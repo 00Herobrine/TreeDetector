@@ -11,7 +11,9 @@ import org.x00hero.TreeDetector.Trees.Events.Tree.Zone.TreeZoneMissEvent;
 import org.x00hero.TreeDetector.Trees.Events.Tree.Zone.TreeZoneStartEvent;
 
 import javax.annotation.Nullable;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import static org.x00hero.TreeDetector.Trees.Events.TreeDetection.*;
@@ -25,6 +27,7 @@ public class Tree {
     private Block bottomTrunk, topTrunk, topLeaf, bottomLeaf;
     public Set<Block> connectedLogs = new HashSet<>();
     public Set<Block> connectedLeaves = new HashSet<>();
+    public Set<Block> connectedHives = new HashSet<>();
     public boolean collapsed = false;
     // Mini-Game
     public TreeZone zone;
@@ -53,6 +56,7 @@ public class Tree {
     public Block getTopLeaf() { return topLeaf; }
     public Block getInitialBlock() { return initialBlock; }
     public Block getGround() { return bottomTrunk.getRelative(BlockFace.DOWN); }
+    public List<Block> getConnectedBlocks() { List<Block> blocks = new ArrayList<>(); blocks.addAll(connectedHives); blocks.addAll(connectedLeaves); blocks.addAll(connectedLogs); return blocks; }
     public void playSound(Sound sound) { PlaySoundAtBlock(bottomTrunk, sound); }
     public void playSound(String sound) { PlaySoundAtBlock(bottomTrunk, sound); }
     public void playSound(Sound sound, float volume, float pitch) { PlaySoundAtBlock(bottomTrunk, sound, volume, pitch); }
@@ -80,6 +84,7 @@ public class Tree {
         if(connectedLogs.contains(block) || connectedLeaves.contains(block)) return false;
         if(isLogBlock(block)) { addLog(block); return true; }
         else if(isLeafBlock(block)) { addLeaf(block); return true; }
+        else if(isHiveBlock(block)) { addHive(block); return true; }
         return false;
     }
     public void addLog(Block block) {
@@ -94,6 +99,10 @@ public class Tree {
         if(bottomLeaf == null || block.getLocation().getY() < bottomLeaf.getLocation().getY()) bottomLeaf = block;
         if(topLeaf == null || block.getLocation().getY() > topTrunk.getLocation().getY()) topLeaf = block;
         if(leafType == null) leafType = block.getType().name().toLowerCase().replace("_leaves", "");
+        completed = System.currentTimeMillis();
+    }
+    public void addHive(Block block) {
+        connectedHives.add(block);
         completed = System.currentTimeMillis();
     }
 }

@@ -10,17 +10,15 @@ import org.bukkit.util.Vector;
 import org.x00hero.TreeDetector.Main;
 import org.x00hero.TreeDetector.Trees.Events.Tree.TreeCollapseEvent;
 
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
 
-import static org.x00hero.TreeDetector.Main.CallEvent;
-import static org.x00hero.TreeDetector.Main.divideVector;
-import static org.x00hero.TreeDetector.Trees.Events.TreeDetection.fallingBlockList;
+import static org.x00hero.TreeDetector.Config.*;
+import static org.x00hero.TreeDetector.Controllers.ActivityController.schedulers;
+import static org.x00hero.TreeDetector.Main.*;
 
 public class TreeFunctions {
     private static final Random random = new Random();
+    public static List<FallingBlock> fallingBlockList = new ArrayList<>();
     public static int randomize(int max) { return (int) randomize(0, max); }
     public static float randomize(float max) { return randomize(0, max); }
    // public static int randomize(int min, int max) { return min + random.nextInt() * (max - min); }
@@ -32,17 +30,17 @@ public class TreeFunctions {
     public static void PlaySoundAtLocation(Location location, Sound sound, float volume, float pitch) { location.getWorld().playSound(location, sound, volume, pitch); }
     public static void PlaySoundAtLocation(Location location, String sound, float volume, float pitch) { location.getWorld().playSound(location, sound, volume, pitch); }
     public static void PoofBlockOutOfExistence(Block block, int lifetime) { timeUntilDDay.put(block, System.currentTimeMillis() + (lifetime * 1000L)); }
-    public static Sound[] treeSounds = new Sound[] {
+/*    public static Sound[] treeSounds = new Sound[] {
             Sound.ITEM_CROSSBOW_QUICK_CHARGE_1, Sound.ITEM_CROSSBOW_QUICK_CHARGE_2, Sound.ITEM_CROSSBOW_QUICK_CHARGE_3,
-            Sound.ITEM_CROSSBOW_LOADING_MIDDLE, Sound.ITEM_CROSSBOW_LOADING_START };
+            Sound.ITEM_CROSSBOW_LOADING_MIDDLE, Sound.ITEM_CROSSBOW_LOADING_START };*/
     public static void Collapse(Tree tree, Player player) { Collapse(tree, player.getFacing()); }
     public static void Collapse(Tree tree, BlockFace fallingFace) {
-        CallEvent(new TreeCollapseEvent(tree, fallingFace));
-        Sound randomSound = treeSounds[randomize(treeSounds.length-1)];
+        Sound randomSound = collapseSounds[randomize(collapseSounds.length-1)];
         tree.collapsed = true;
-        PlaySoundAtLocation(tree.getLocation(), randomSound, 10f, 0.7f - (tree.getHeight() * 0.025f) + 0.01f);
-        for(Block trunk : tree.connectedLogs) spawnFallingSand(trunk, fallingFace);
-        for(Block leaves : tree.connectedLeaves) spawnFallingSand(leaves, fallingFace);
+        log("Random: " + randomSound);
+        PlaySoundAtLocation(tree.getLocation(), randomSound, collapseVolume, collapsePitch - (tree.getHeight() * collapsePitchMod) + 0.01f);
+        for(Block block : tree.getConnectedBlocks()) spawnFallingSand(block, fallingFace);
+        CallEvent(new TreeCollapseEvent(tree, fallingFace));
         tree.stopGame();
     }
     public static FallingBlock spawnFallingSand(Block block) { return spawnFallingSand(block.getLocation(), block.getType(), new Vector(0, -.5, 0)); }
@@ -56,7 +54,7 @@ public class TreeFunctions {
     }
     private static HashMap<Block, Long> timeUntilDDay = new HashMap<>();
     public static void DDayCheck() {
-        Bukkit.getScheduler().scheduleSyncRepeatingTask(Main.plugin, () -> {
+        int id = Bukkit.getScheduler().scheduleSyncRepeatingTask(Main.plugin, () -> {
             Iterator<Map.Entry<Block, Long>> iterator = timeUntilDDay.entrySet().iterator();
             while (iterator.hasNext()) {
                 Map.Entry<Block, Long> entry = iterator.next();
@@ -70,6 +68,7 @@ public class TreeFunctions {
                     // PlaySoundAtBlock(block, Sound.ITEM_BUNDLE_INSERT);
                 }
             }
-        }, 0L, 20L);
+        }, 0L, expirationCheckRate);
+        schedulers.add(id);
     }
 }

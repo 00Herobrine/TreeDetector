@@ -65,11 +65,11 @@ public class TreeZone {
         randomLocation.add(divideVector(direction.getDirection(), 2));
         double x = randomize(-constraintX, constraintX);
         double y = randomize(-constraintY, constraintY);
-        if(direction == BlockFace.EAST || direction == BlockFace.WEST) randomLocation.add(offsetZ, y, x);
-        else randomLocation.add(x, y, offsetZ);
+        if(direction == BlockFace.EAST || direction == BlockFace.WEST) randomLocation.add(particleOffsetZ, y, x);
+        else randomLocation.add(x, y, particleOffsetZ);
         return randomLocation;
     }
     public void randomizeLocation(@Nullable BlockFace face) { particleLocation = face == null ? getRandomLocation() : getRandomLocation(face); PlaySound(); }
-    private void PlaySound() { particleLocation.getWorld().playSound(particleLocation, sound, soundVolume, soundPitch); }
-    public void display(Player player) { player.spawnParticle(particle, particleLocation.clone().add(offsetX, offsetY, offsetZ), particleAmount, dustOptions); /*log("Spawned particles @ " + particleLocation);*/ }
+    private void PlaySound() { particleLocation.getWorld().playSound(particleLocation, zoneSound, zoneSoundVolume, zoneSoundPitch); }
+    public void display(Player player) { player.spawnParticle(particle, particleLocation.clone().add(particleOffsetX, particleOffsetY, particleOffsetZ), particleAmount, dustOptions); /*log("Spawned particles @ " + particleLocation);*/ }
 }

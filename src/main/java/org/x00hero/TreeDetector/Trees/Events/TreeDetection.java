@@ -1,6 +1,7 @@
 package org.x00hero.TreeDetector.Trees.Events;
 
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.FallingBlock;
@@ -20,11 +21,11 @@ import org.x00hero.TreeDetector.Trees.Events.Tree.TreeHitEvent;
 import org.x00hero.TreeDetector.Trees.Events.Tree.TreeSwapEvent;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import static org.x00hero.TreeDetector.Config.*;
 import static org.x00hero.TreeDetector.Main.*;
 import static org.x00hero.TreeDetector.Trees.TreeFunctions.PoofBlockOutOfExistence;
+import static org.x00hero.TreeDetector.Trees.TreeFunctions.fallingBlockList;
 
 public class TreeDetection implements Listener {
     @EventHandler
@@ -46,7 +47,6 @@ public class TreeDetection implements Listener {
         }
     }
 
-    public static List<FallingBlock> fallingBlockList = new ArrayList<>();
     @EventHandler
     public static void onBlockFall(EntityChangeBlockEvent e) {
         if(!(e.getEntity() instanceof FallingBlock fallingBlock)) return;
@@ -77,9 +77,10 @@ public class TreeDetection implements Listener {
 
     private static final BlockFace[] searchDirections = new BlockFace[]{BlockFace.NORTH, BlockFace.EAST, BlockFace.SOUTH, BlockFace.WEST, BlockFace.UP, BlockFace.DOWN};
     private static boolean isTree(Tree result) { return result != null && result.logCount() > logsThreshold && result.leafCount() > leavesThreshold; }
-    private static boolean isValidBlock(Block block) { return (isLogBlock(block) || isLeafBlock(block)); }
+    private static boolean isValidBlock(Block block) { return isLogBlock(block) || isLeafBlock(block) || (isHiveBlock(block) && connectHives); }
     public static boolean isLogBlock(Block block) { return block.getType().name().toLowerCase().endsWith("log"); }
     public static boolean isLeafBlock(Block block) { return block.getType().name().toLowerCase().endsWith("leaves"); }
+    public static boolean isHiveBlock(Block block) { return block.getType() == Material.BEE_NEST; }
     public static boolean isSameType(Block block, String typePrefix) { return typePrefix == null || block.getType().name().toLowerCase().startsWith(typePrefix); }
     public static Tree getTree(Block block) { return (isValidBlock(block)) ? getTree(block, maxSearchCalls) : null; }
     private static Tree getTree(Block currentBlock, int maxCalls) { Tree tree = new Tree(currentBlock); attachTreeBlocks(currentBlock, tree, maxCalls, new ArrayList<>()); return tree; }
@@ -99,7 +100,7 @@ public class TreeDetection implements Listener {
         for (BlockFace face : searchDirections) {
             Block neighbor = currentBlock.getRelative(face);
             if(result.calls >= maxCalls) return;
-            if (searched.contains(neighbor.getLocation()) || !isValidBlock(neighbor) || (!isSameType(neighbor, result.getTreeType()) && materialConsistency)) continue;
+            if (searched.contains(neighbor.getLocation()) || !isValidBlock(neighbor) || (!isSameType(neighbor, result.getTreeType()) && materialConsistency && !isHiveBlock(neighbor))) continue;
             attachTreeBlocks(neighbor, result, maxCalls, searched);
         }
     }

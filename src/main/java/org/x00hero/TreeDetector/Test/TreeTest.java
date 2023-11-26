@@ -12,7 +12,10 @@ import org.x00hero.TreeDetector.Trees.Events.Tree.TreeHitEvent;
 import org.x00hero.TreeDetector.Trees.Events.Tree.Zone.TreeZoneHitEvent;
 import org.x00hero.TreeDetector.Trees.Events.Tree.Zone.TreeZoneMissEvent;
 
+import static org.x00hero.TreeDetector.Config.*;
 import static org.x00hero.TreeDetector.Main.log;
+import static org.x00hero.TreeDetector.Trees.TreeFunctions.PlaySoundAtBlock;
+import static org.x00hero.TreeDetector.Trees.TreeFunctions.randomize;
 
 public class TreeTest implements Listener {
     @EventHandler
@@ -50,6 +53,8 @@ public class TreeTest implements Listener {
     }
     @EventHandler
     public void onBranchLand(TreeBranchLandEvent e) {
-        log("Branch Landed @ " + e.getBlock().getLocation());
+        int random = randomize(branchSoundChance);
+        if(random == branchSoundChance-1) PlaySoundAtBlock(e.getBlock(), e.getBlock().getBlockData().getSoundGroup().getStepSound(), branchVolume, branchPitch);
+        //log("Branch Landed @ " + e.getBlock().getLocation());
     }
 }
