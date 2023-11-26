@@ -7,8 +7,11 @@ import org.bukkit.block.Block;
 import org.bukkit.event.Event;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.util.Vector;
-import org.x00hero.TreeDetector.Events.TreeDetection;
+import org.x00hero.TreeDetector.Controllers.ActivityController;
+import org.x00hero.TreeDetector.Controllers.CommandController;
+import org.x00hero.TreeDetector.Trees.Events.TreeDetection;
 import org.x00hero.TreeDetector.Test.TreeTest;
+import org.x00hero.TreeDetector.Trees.TreeFunctions;
 
 import java.util.logging.Level;
 
@@ -23,30 +26,23 @@ public final class Main extends JavaPlugin {
         Config.Load();
         registerCommands();
         registerEvents();
-        ActivityManager.ExpireCheck();
-        TreeTest.DDayCheck();
+        ActivityController.ExpireCheck();
+        TreeFunctions.DDayCheck();
         log(prefix + "Trees will be exterminated. (Enabled)");
     }
 
     public static void Reload() {
-        Bukkit.getScheduler().cancelTask(ActivityManager.schedulerID);
+        Bukkit.getScheduler().cancelTask(ActivityController.schedulerID);
         Config.Load();
-        ActivityManager.ExpireCheck();
+        ActivityController.ExpireCheck();
         log(plugin.prefix + "Trees thought they were safe. (Reload)");
     }
 
     @Override
     public void onDisable() {
-        Bukkit.getScheduler().cancelTask(ActivityManager.schedulerID);
+        Bukkit.getScheduler().cancelTask(ActivityController.schedulerID);
         log(prefix + "Trees have been spared. (Disabled)");
     }
-
-    public static void PlaySoundAtBlock(Block block, Sound sound) { PlaySoundAtBlock(block, sound); }
-    public static void PlaySoundAtBlock(Block block, String sound) { PlaySoundAtBlock(block, sound, 1f, 1f); }
-    public static void PlaySoundAtBlock(Block block, Sound sound, float volume, float pitch) { PlaySoundAtLocation(block.getLocation(), sound, volume, pitch); }
-    public static void PlaySoundAtBlock(Block block, String sound, float volume, float pitch) { PlaySoundAtLocation(block.getLocation(), sound, volume, pitch); }
-    public static void PlaySoundAtLocation(Location location, Sound sound, float volume, float pitch) { location.getWorld().playSound(location, sound, volume, pitch); }
-    public static void PlaySoundAtLocation(Location location, String sound, float volume, float pitch) { location.getWorld().playSound(location, sound, volume, pitch); }
 
     public void registerCommands() { getCommand("treedetector").setExecutor(new CommandController()); }
     public void registerEvents() {

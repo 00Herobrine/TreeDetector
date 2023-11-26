@@ -1,10 +1,11 @@
-package org.x00hero.TreeDetector;
+package org.x00hero.TreeDetector.Controllers;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
-import org.x00hero.TreeDetector.Components.Tree;
-import org.x00hero.TreeDetector.Components.TreeZone;
-import org.x00hero.TreeDetector.Events.Tree.Zone.TreeZoneExpiredEvent;
+import org.x00hero.TreeDetector.Trees.Tree;
+import org.x00hero.TreeDetector.Trees.TreeZone;
+import org.x00hero.TreeDetector.Trees.Events.Tree.Zone.TreeZoneExpiredEvent;
+import org.x00hero.TreeDetector.Main;
 
 import java.util.HashMap;
 import java.util.UUID;
@@ -12,7 +13,7 @@ import java.util.UUID;
 import static org.x00hero.TreeDetector.Config.updateRate;
 import static org.x00hero.TreeDetector.Main.CallEvent;
 
-public class ActivityManager {
+public class ActivityController {
     private static HashMap<UUID, Tree> activeTrees = new HashMap<>();
     public static int schedulerID;
 

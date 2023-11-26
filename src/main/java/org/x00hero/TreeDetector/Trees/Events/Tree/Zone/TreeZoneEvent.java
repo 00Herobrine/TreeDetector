@@ -1,12 +1,12 @@
-package org.x00hero.TreeDetector.Events.Tree.Zone;
+package org.x00hero.TreeDetector.Trees.Events.Tree.Zone;
 
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.x00hero.TreeDetector.Components.Tree;
-import org.x00hero.TreeDetector.Components.TreeZone;
+import org.x00hero.TreeDetector.Trees.Tree;
+import org.x00hero.TreeDetector.Trees.TreeZone;
 
 import java.util.Locale;
 

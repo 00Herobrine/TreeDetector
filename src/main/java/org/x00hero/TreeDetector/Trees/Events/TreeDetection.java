@@ -1,4 +1,4 @@
-package org.x00hero.TreeDetector.Events;
+package org.x00hero.TreeDetector.Trees.Events;
 
 import org.bukkit.Location;
 import org.bukkit.block.Block;
@@ -13,18 +13,18 @@ import org.bukkit.event.entity.EntityChangeBlockEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
-import org.x00hero.TreeDetector.ActivityManager;
-import org.x00hero.TreeDetector.Components.Tree;
-import org.x00hero.TreeDetector.Events.Tree.TreeHitEvent;
-import org.x00hero.TreeDetector.Events.Tree.TreeSwapEvent;
+import org.x00hero.TreeDetector.Controllers.ActivityController;
+import org.x00hero.TreeDetector.Trees.Events.Tree.TreeBranchLandEvent;
+import org.x00hero.TreeDetector.Trees.Tree;
+import org.x00hero.TreeDetector.Trees.Events.Tree.TreeHitEvent;
+import org.x00hero.TreeDetector.Trees.Events.Tree.TreeSwapEvent;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 import static org.x00hero.TreeDetector.Config.*;
 import static org.x00hero.TreeDetector.Main.*;
-import static org.x00hero.TreeDetector.Test.TreeTest.PoofBlockOutOfExistence;
+import static org.x00hero.TreeDetector.Trees.TreeFunctions.PoofBlockOutOfExistence;
 
 public class TreeDetection implements Listener {
     @EventHandler
@@ -36,10 +36,10 @@ public class TreeDetection implements Listener {
     @EventHandler
     public void EntityHit(EntityDamageByEntityEvent e) {
         if(!(e.getDamager() instanceof Player player)) return;
-        if(ActivityManager.isActive(player)) {
+        if(ActivityController.isActive(player)) {
             if(!(e.getEntity() instanceof Slime slime)) return;
-            Tree tree = ActivityManager.getTree(player);
-            if(tree.collapsed) { ActivityManager.setInactive(player); return; }
+            Tree tree = ActivityController.getTree(player);
+            if(tree.collapsed) { ActivityController.setInactive(player); return; }
             Slime activeSlime = tree.zone.getSlime();
             if(activeSlime != null && activeSlime.equals(slime))
                 tree.hitZone(player);
@@ -51,6 +51,7 @@ public class TreeDetection implements Listener {
     public static void onBlockFall(EntityChangeBlockEvent e) {
         if(!(e.getEntity() instanceof FallingBlock fallingBlock)) return;
         else if(!fallingBlockList.contains(fallingBlock)) return;
+        CallEvent(new TreeBranchLandEvent(e.getBlock()));
         fallingBlockList.remove(fallingBlock);
         PoofBlockOutOfExistence(fallingBlock.getLocation().getBlock(), 2);
     }
@@ -63,8 +64,8 @@ public class TreeDetection implements Listener {
         if(block == null || !isLogBlock(block)) return;
         Tree tree = getTree(block);
         if(!isTree(tree)) return;
-        if(ActivityManager.isActive(player)) {
-            Tree activeTree = ActivityManager.getTree(player);
+        if(ActivityController.isActive(player)) {
+            Tree activeTree = ActivityController.getTree(player);
             if(activeTree.getBottomTrunk().equals(tree.getBottomTrunk())) { // similar trees
                 tree = activeTree;
                 if(activeTree.zone.isExpired()) activeTree.randomizeZone();

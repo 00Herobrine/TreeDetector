@@ -1,8 +1,8 @@
-package org.x00hero.TreeDetector.Events.Tree;
+package org.x00hero.TreeDetector.Trees.Events.Tree;
 
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
-import org.x00hero.TreeDetector.Components.Tree;
+import org.x00hero.TreeDetector.Trees.Tree;
 
 public class TreeSwapEvent extends TreeHitEvent {
     public final Tree initialTree;
