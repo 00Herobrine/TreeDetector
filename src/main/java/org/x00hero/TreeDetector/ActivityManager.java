@@ -22,7 +22,7 @@ public class ActivityManager {
                 Tree tree = activeTrees.get(uuid);
                 if(tree.zone == null) continue;
                 Player player = Bukkit.getPlayer(uuid);
-                if(player == null) setInactive(uuid);
+                if(player == null || tree.collapsed) setInactive(uuid);
                 else if(tree.zone.isExpired()) setExpired(player, tree, tree.zone);
                 else tree.displayParticle(player);
             }
@@ -40,5 +40,4 @@ public class ActivityManager {
     public static void setInactive(Player player) { setInactive(player.getUniqueId()); }
     public static void setInactive(UUID uuid) { activeTrees.get(uuid).zone.endSlime(); activeTrees.remove(uuid); }
     public static void setExpired(Player player, Tree tree, TreeZone zone) { setInactive(player); CallEvent(new TreeZoneExpiredEvent(tree, zone, player)); }
-    //public static void setExpired(UUID uuid) {  }
 }

@@ -3,22 +3,28 @@ package org.x00hero.TreeDetector.Events;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
+import org.bukkit.entity.FallingBlock;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Slime;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.entity.EntityChangeBlockEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.x00hero.TreeDetector.ActivityManager;
 import org.x00hero.TreeDetector.Components.Tree;
 import org.x00hero.TreeDetector.Events.Tree.TreeHitEvent;
+import org.x00hero.TreeDetector.Events.Tree.TreeSwapEvent;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 import static org.x00hero.TreeDetector.Config.*;
-import static org.x00hero.TreeDetector.Main.CallEvent;
+import static org.x00hero.TreeDetector.Main.*;
+import static org.x00hero.TreeDetector.Test.TreeTest.PoofBlockOutOfExistence;
 
 public class TreeDetection implements Listener {
     @EventHandler
@@ -33,10 +39,20 @@ public class TreeDetection implements Listener {
         if(ActivityManager.isActive(player)) {
             if(!(e.getEntity() instanceof Slime slime)) return;
             Tree tree = ActivityManager.getTree(player);
+            if(tree.collapsed) { ActivityManager.setInactive(player); return; }
             Slime activeSlime = tree.zone.getSlime();
             if(activeSlime != null && activeSlime.equals(slime))
                 tree.hitZone(player);
         }
+    }
+
+    public static List<FallingBlock> fallingBlockList = new ArrayList<>();
+    @EventHandler
+    public static void onBlockFall(EntityChangeBlockEvent e) {
+        if(!(e.getEntity() instanceof FallingBlock fallingBlock)) return;
+        else if(!fallingBlockList.contains(fallingBlock)) return;
+        fallingBlockList.remove(fallingBlock);
+        PoofBlockOutOfExistence(fallingBlock.getLocation().getBlock(), 2);
     }
 
     @EventHandler
@@ -53,9 +69,9 @@ public class TreeDetection implements Listener {
                 tree = activeTree;
                 if(activeTree.zone.isExpired()) activeTree.randomizeZone();
                 else activeTree.missedZone(player); // player missed slime
-            } else tree.startGame(player, e.getBlockFace()); // swapped trees
-        } else tree.startGame(player, e.getBlockFace()); // first time punching
-        CallEvent(new TreeHitEvent(tree, player));
+            } else { tree.startGame(player, e.getBlockFace()); CallEvent(new TreeSwapEvent(tree, activeTree, player, e.getBlockFace())); } // swapped trees
+        } else tree.startGame(player, e.getBlockFace());  // first time punching
+        CallEvent(new TreeHitEvent(tree, player, e.getBlockFace()));
     }
 
     private static final BlockFace[] searchDirections = new BlockFace[]{BlockFace.NORTH, BlockFace.EAST, BlockFace.SOUTH, BlockFace.WEST, BlockFace.UP, BlockFace.DOWN};
@@ -63,7 +79,7 @@ public class TreeDetection implements Listener {
     private static boolean isValidBlock(Block block) { return (isLogBlock(block) || isLeafBlock(block)); }
     public static boolean isLogBlock(Block block) { return block.getType().name().toLowerCase().endsWith("log"); }
     public static boolean isLeafBlock(Block block) { return block.getType().name().toLowerCase().endsWith("leaves"); }
-    public static boolean isSameType(Block block, String typePrefix) { return block.getType().name().toLowerCase().startsWith(typePrefix); }
+    public static boolean isSameType(Block block, String typePrefix) { return typePrefix == null || block.getType().name().toLowerCase().startsWith(typePrefix); }
     public static Tree getTree(Block block) { return (isValidBlock(block)) ? getTree(block, maxSearchCalls) : null; }
     private static Tree getTree(Block currentBlock, int maxCalls) { Tree tree = new Tree(currentBlock); attachTreeBlocks(currentBlock, tree, maxCalls, new ArrayList<>()); return tree; }
     private static void attachTreeBlocks(Block currentBlock, Tree result, int maxCalls, ArrayList<Location> searched) {
@@ -78,14 +94,11 @@ public class TreeDetection implements Listener {
         int initialY = result.initialBlock.getY();
         int initialZ = result.initialBlock.getZ();
         if (maxSearchHeight != -1 && (Math.abs(currentX - initialX) > maxSearchWidth || Math.abs(currentZ - initialZ) > maxSearchWidth)
-                || (maxSearchHeight != -1 && Math.abs(currentY - initialY) > maxSearchHeight)
-                || (!isSameType(currentBlock, result.getTreeType()) && materialConsistency)) {
-            return;
-        }
+                || (maxSearchHeight != -1 && Math.abs(currentY - initialY) > maxSearchHeight)) return;
         for (BlockFace face : searchDirections) {
             Block neighbor = currentBlock.getRelative(face);
             if(result.calls >= maxCalls) return;
-            if (searched.contains(neighbor.getLocation()) || !isValidBlock(neighbor)) continue;
+            if (searched.contains(neighbor.getLocation()) || !isValidBlock(neighbor) || (!isSameType(neighbor, result.getTreeType()) && materialConsistency)) continue;
             attachTreeBlocks(neighbor, result, maxCalls, searched);
         }
     }

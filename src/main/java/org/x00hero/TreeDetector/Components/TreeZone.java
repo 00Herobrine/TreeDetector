@@ -6,7 +6,6 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Slime;
 import org.bukkit.util.Consumer;
-import org.bukkit.util.Vector;
 import org.x00hero.TreeDetector.Events.Tree.Zone.TreeZoneHitEvent;
 
 import javax.annotation.Nullable;
@@ -14,6 +13,7 @@ import java.util.Random;
 
 import static org.x00hero.TreeDetector.Config.*;
 import static org.x00hero.TreeDetector.Main.CallEvent;
+import static org.x00hero.TreeDetector.Main.divideVector;
 
 public class TreeZone {
     public final Location initialLocation;
@@ -22,17 +22,19 @@ public class TreeZone {
     public final long timeCreated;
     public long expirationTime;
     public long timeHit;
+    public final BlockFace face;
 
     public TreeZone(Location initialLocation, BlockFace face) {
         this.initialLocation = initialLocation;
         timeCreated = System.currentTimeMillis();
-        particleLocation = getRandomLocation(initialLocation, new BlockFace[]{face});
+        randomizeLocation(face);
+        this.face = face;
     }
-    public TreeZone(Location initialLocation) {
+/*    public TreeZone(Location initialLocation) {
         this.initialLocation = initialLocation;
         timeCreated = System.currentTimeMillis();
         particleLocation = getRandomLocation();
-    }
+    }*/
 
     public Slime getSlime() { return slime; }
     public void spawnSlime() {
@@ -72,17 +74,11 @@ public class TreeZone {
         else randomLocation.add(x, y, offsetZ);
         return randomLocation;
     }
-    public Vector divideVector(Vector vector, double divisor) {
-        double quotientX = vector.getX() / divisor;
-        double quotientY = vector.getY() / divisor;
-        double quotientZ = vector.getZ() / divisor;
-        return new Vector(quotientX, quotientY, quotientZ);
-    }
-    public Location randomizeLocation(@Nullable BlockFace face) { particleLocation = face == null ? getRandomLocation() : getRandomLocation(face); PlaySound(); return particleLocation; }
-    private final Random random = new Random();
+    public void randomizeLocation(@Nullable BlockFace face) { particleLocation = face == null ? getRandomLocation() : getRandomLocation(face); PlaySound(); }
+    private static final Random random = new Random();
     private void PlaySound() { particleLocation.getWorld().playSound(particleLocation, sound, soundVolume, soundPitch); }
-    public int randomize(int max) { return (int) randomize(0, max); }
-    public float randomize(float max) { return randomize(-max, max); }
-    public float randomize(float min, float max) { return min + random.nextFloat() * (max - min); }
+    public static int randomize(int max) { return (int) randomize(0, max); }
+    public static float randomize(float max) { return randomize(-max, max); }
+    public static float randomize(float min, float max) { return min + random.nextFloat() * (max - min); }
     public void display(Player player) { player.spawnParticle(particle, particleLocation.clone().add(offsetX, offsetY, offsetZ), particleAmount, dustOptions); /*log("Spawned particles @ " + particleLocation);*/ }
 }

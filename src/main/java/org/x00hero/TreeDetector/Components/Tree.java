@@ -1,6 +1,8 @@
 package org.x00hero.TreeDetector.Components;
 
+import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
@@ -12,9 +14,11 @@ import javax.annotation.Nullable;
 import java.util.HashSet;
 import java.util.Set;
 
-import static org.x00hero.TreeDetector.Events.TreeDetection.isLeafBlock;
-import static org.x00hero.TreeDetector.Events.TreeDetection.isLogBlock;
+import static org.x00hero.TreeDetector.Components.TreeZone.randomize;
+import static org.x00hero.TreeDetector.Events.TreeDetection.*;
 import static org.x00hero.TreeDetector.Main.CallEvent;
+import static org.x00hero.TreeDetector.Main.PlaySoundAtBlock;
+import static org.x00hero.TreeDetector.Test.TreeTest.Collapse;
 
 public class Tree {
     public final Block initialBlock;
@@ -23,6 +27,7 @@ public class Tree {
     private Block bottomTrunk, topTrunk, topLeaf, bottomLeaf;
     public Set<Block> connectedLogs = new HashSet<>();
     public Set<Block> connectedLeaves = new HashSet<>();
+    public boolean collapsed = false;
     // Mini-Game
     public TreeZone zone;
     public int zonesHit, zonesTotal, timesHit;
@@ -38,7 +43,7 @@ public class Tree {
         connectedLogs.add(block);
         if(bottomTrunk == null || block.getLocation().getY() < bottomTrunk.getLocation().getY()) bottomTrunk = block;
         if(topTrunk == null || block.getLocation().getY() > topTrunk.getLocation().getY()) topTrunk = block;
-        if(trunkType == null) trunkType = block.getType().name().toLowerCase().replace("_log", "");
+        if(trunkType == null) { trunkType = block.getType().name().toLowerCase().replace("_log", ""); }
         completed = System.currentTimeMillis();
     }
     public void addLeaf(Block block) {
@@ -52,6 +57,7 @@ public class Tree {
     public int getHeight() { return topLeaf.getY() - bottomTrunk.getY(); }
     public int logCount() { return connectedLogs.size(); }
     public int leafCount() { return connectedLeaves.size(); }
+    public Location getLocation() { return bottomTrunk.getLocation(); }
     public String getTreeType() { return trunkType; }
     public String getLeafType() { return leafType; }
     public Material getTrunkType() { return getBottomTrunk().getType(); }
@@ -61,6 +67,8 @@ public class Tree {
     public Block getTopLeaf() { return topLeaf; }
     public Block getInitialBlock() { return initialBlock; }
     public Block getGround() { return bottomTrunk.getRelative(BlockFace.DOWN); }
+    public void playSound(Sound sound) { PlaySoundAtBlock(bottomTrunk, sound); }
+    public void playSound(String sound) { PlaySoundAtBlock(bottomTrunk, sound); }
     public void startGame(Player player, @Nullable BlockFace face) {
         if(zone == null) zone = new TreeZone(initialBlock.getLocation(), face);
         if(ActivityManager.isActive(player)) ActivityManager.getTree(player).zone.endSlime();
@@ -73,20 +81,18 @@ public class Tree {
     public void hitZone(Player player) { zonesHit++; timesHit++; zone.hit(this, player); randomizeZone(); }
     public void missedZone(Player player) { timesHit++; CallEvent(new TreeZoneMissEvent(this, zone, player)); }
     public void randomizeZone() { randomizeZone(null); }
-    public void randomizeZone(@Nullable BlockFace face) { zone.randomizeLocation(face); zone.spawnSlime(); zone.updateExpiration(); zonesTotal++; }
-    public void displayZone(Player player) {
-        //displaySlime(player);
-        displayParticle(player);
-    }
+    public void randomizeZone(@Nullable BlockFace face) { if(collapsed) return; zone.randomizeLocation(face); zone.spawnSlime(); zone.updateExpiration(); zonesTotal++; }
+    public void displayZone(Player player) { /*displaySlime();*/ displayParticle(player); }
+    public BlockFace[] fallDirection = new BlockFace[]{BlockFace.NORTH,BlockFace.EAST,BlockFace.SOUTH,BlockFace.WEST};
+    public void collapse() { Collapse(this, fallDirection[randomize(fallDirection.length-1)]); }
+    public void collapse(BlockFace fallingFace) { Collapse(this, fallingFace); }
     //public void displaySlime(Player player) { }
-    public void displayParticle(Player player) {
-        zone.display(player);
-    }
+    public void displayParticle(Player player) { zone.display(player); }
 
     public boolean addBlock(Block block) {
         if(connectedLogs.contains(block) || connectedLeaves.contains(block)) return false;
         if(isLogBlock(block)) { addLog(block); return true; }
-        else if(isLeafBlock(block)) { addLeaf(block); return true; }
+        else if(isLeafBlock(block) ) { addLeaf(block); return true; }
         return false;
     }
 }

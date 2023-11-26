@@ -1,5 +1,6 @@
 package org.x00hero.TreeDetector.Events.Tree.Zone;
 
+import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
@@ -23,6 +24,8 @@ public class TreeZoneEvent extends Event {
     public Tree getTree() { return tree; }
     public TreeZone getZone() { return zone; }
     public Player getPlayer() { return player; }
+    public BlockFace getFace() { return zone.face; }
+
 
     public long getTimeStarted() { return tree.zone.timeCreated; }
     public int getTotalZones() { return tree.zonesTotal; }
