@@ -3,6 +3,7 @@ package org.x00hero.TreeDetector;
 import org.bukkit.Color;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
+import org.bukkit.block.BlockFace;
 import org.bukkit.entity.EntityType;
 
 import static org.x00hero.TreeDetector.Main.plugin;
@@ -17,6 +18,7 @@ public class Config {
     public static int expirationCheckRate;
     public static boolean materialConsistency; // if leaves match the trunk type
     public static boolean connectHives;
+    public static BlockFace[] searchDirections;
     //endregion
 
     //region Zone
@@ -79,6 +81,9 @@ public class Config {
         expirationCheckRate = plugin.getConfig().getInt("Detection.expirationCheckRate");
         materialConsistency = plugin.getConfig().getBoolean("Detection.materialConsistency");
         connectHives = plugin.getConfig().getBoolean("Detection.connectHives");
+        searchDirections = plugin.getConfig().getList("Detection.searchDirections").stream()
+                .map(o -> BlockFace.valueOf((String) o))
+                .toArray(BlockFace[]::new);
         //endregion
 
         //region Zone
@@ -90,9 +95,9 @@ public class Config {
         constraintX = (float) plugin.getConfig().getDouble("Zone.constraint.x");
         constraintY = (float) plugin.getConfig().getDouble("Zone.constraint.y");
         faceOffset = (float) plugin.getConfig().getDouble("Zone.constraint.faceOffset");
-        zoneSound = Sound.valueOf(plugin.getConfig().getString("Zone.sound.audio"));
-        zoneSoundPitch = (float) plugin.getConfig().getDouble("Zone.sound.pitch");
-        zoneSoundVolume = (float) plugin.getConfig().getDouble("Zone.sound.volume");
+        zoneSound = Sound.valueOf(plugin.getConfig().getString("Sound.Zone.audio"));
+        zoneSoundPitch = (float) plugin.getConfig().getDouble("Sound.Zone.pitch");
+        zoneSoundVolume = (float) plugin.getConfig().getDouble("Sound.Zone.volume");
         //region Particles
         particleAmount = plugin.getConfig().getInt("Zone.Particles.amount");
         particleUpdateRate = plugin.getConfig().getLong("Zone.Particles.updateRate");
@@ -130,7 +135,7 @@ public class Config {
         dropPitch = (float) plugin.getConfig().getDouble("Sound.Drop.pitch");
         dropVolume = (float) plugin.getConfig().getDouble("Sound.Drop.volume");
         baseZones = plugin.getConfig().getInt("Tree.Collapse.requiredZones");
-        zonesMod = plugin.getConfig().getInt("Tree.Collapse.requiredZones");
+        zonesMod = plugin.getConfig().getInt("Tree.Collapse.zonesMod");
         requiredPercentage = (float) plugin.getConfig().getDouble("Tree.Collapse.requiredPercentage");
         //endregion
     }

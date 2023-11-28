@@ -1,12 +1,23 @@
 Detection: # Raising the # for any of the maxSearch can improve detection at the cost of some performance.
-  maxSearchCalls: 250 # total calls allowed per Tree detection, the more, the better but not always the answer
+  maxSearchCalls: 500 # total calls allowed per Tree detection, the more, the better but not always the answer
   maxSearchWidth: 5 # width radius for search
   maxSearchHeight: 20 # height radius for search
   leavesThreshold: 6 # required leaves required for a valid Tree
   logThreshold: 3 # required logs required for a valid Tree
-  expirationCheckRate: 20
+  expirationCheckRate: 20 # Check when mini-games are expired per X ticks
   materialConsistency: true # if the leaves should match the log type
   connectHives: true
+  searchDirections: # Directions it will look for a connected "Tree" block
+    - NORTH
+    - NORTH_EAST
+    - NORTH_WEST
+    - EAST
+    - SOUTH
+    - SOUTH_EAST
+    - SOUTH_WEST
+    - WEST
+    - UP
+    - DOWN
 Tree:
   Collapse:
     requiredZones: 3 # requiredZones + (getTreeHeight() / zonesMod)
@@ -53,10 +64,22 @@ Sound: # Audio can be any sound in Minecraft's library
     pitch: 0.7
     chance: 3
   Zone: # Audio can be any sound in Minecraft's library
-    audio: UI_LOOM_TAKE_RESULT
+    audio: BLOCK_BEEHIVE_SHEAR
     pitch: 0.7
     volume: 0.2
+    chance: 1
+    Hit:
+      audio: ITEM_CROSSBOW_LOADING_START
+      pitch: 1.0
+      volume: 1.0
+      chance: 1
+    Miss:
+      audio: UI_LOOM_TAKE_RESULT
+      pitch: 1 .0
+      volume: 0.5
+      chance: 1
   Drop:
     audio: ENTITY_ITEM_FRAME_ROTATE_ITEM
     pitch: 0.6
     volume: 0.5
+    chance: 1

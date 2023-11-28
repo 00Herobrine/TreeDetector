@@ -1,5 +1,6 @@
 package org.x00hero.TreeDetector.Test;
 
+import org.bukkit.Material;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.x00hero.TreeDetector.Trees.Events.Tree.TreeBranchLandEvent;
@@ -24,6 +25,7 @@ public class TreeTest implements Listener {
         e.getPlayer().sendMessage("Trunks Top: " + tree.getTopTrunk().getY() + " Bottom: " + tree.getBottomTrunk().getY());
         e.getPlayer().sendMessage("Leaves Top: " + tree.getTopLeaf().getY() + " Bottom: " + tree.getBottomLeaf().getY());
         e.getPlayer().sendMessage("Search Took " + tree.Result() + "ms with " + tree.calls + " blocks searched. Added " + (tree.connectedLeaves.size() + tree.connectedLogs.size()) + " blocks.");
+        HighlightBlocks(tree.getConnectedBlocks(), Material.ORANGE_WOOL, 5);
     }
     @EventHandler
     public void onTreeSwap(TreeSwapEvent e) {

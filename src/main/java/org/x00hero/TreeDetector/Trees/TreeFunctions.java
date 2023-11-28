@@ -6,6 +6,7 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.entity.FallingBlock;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 import org.x00hero.TreeDetector.Main;
 import org.x00hero.TreeDetector.Trees.Events.Tree.TreeCollapseEvent;
@@ -82,4 +83,21 @@ public class TreeFunctions {
         }
         block.setType(Material.AIR);
     }
+    public static void HighlightBlocks(List<Block> blocks, Material highlightMaterial, int duration) {
+        for(Block block : blocks) {
+            if(block.getType() == Material.AIR || block.getType() == highlightMaterial) continue;
+            temporarilyReplaceBlock(block, highlightMaterial, duration);
+        }
+    }
+    public static void temporarilyReplaceBlock(Block block, Material tempMaterial, int duration) {
+        Material originalMaterial = block.getType();
+        block.setType(tempMaterial);
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                resetBlockType(block, originalMaterial);
+            }
+        }.runTaskLater(plugin, duration * 20L);
+    }
+    private static void resetBlockType(Block block, Material originalMaterial) { block.setType(originalMaterial); }
 }

@@ -71,8 +71,6 @@ public class TreeDetection implements Listener {
         } else tree.startGame(player, e.getBlockFace());  // first time punching
         CallEvent(new TreeHitEvent(tree, player, e.getBlockFace()));
     }
-
-    private static final BlockFace[] searchDirections = new BlockFace[]{BlockFace.NORTH, BlockFace.EAST, BlockFace.SOUTH, BlockFace.WEST, BlockFace.UP, BlockFace.DOWN};
     private static boolean isTree(Tree result) { return result != null && result.logCount() > logsThreshold && result.leafCount() > leavesThreshold; }
     private static boolean isValidBlock(Block block) { return isLogBlock(block) || isLeafBlock(block) || (isHiveBlock(block) && connectHives); }
     public static boolean isLogBlock(Block block) { return block.getType().name().toLowerCase().endsWith("log"); }
