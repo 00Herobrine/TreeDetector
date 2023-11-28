@@ -5,17 +5,16 @@ import org.bukkit.event.Listener;
 import org.x00hero.TreeDetector.Trees.Events.Tree.TreeBranchLandEvent;
 import org.x00hero.TreeDetector.Trees.Events.Tree.TreeCollapseEvent;
 import org.x00hero.TreeDetector.Trees.Events.Tree.TreeSwapEvent;
-import org.x00hero.TreeDetector.Trees.Events.Tree.Zone.TreeZoneExpiredEvent;
-import org.x00hero.TreeDetector.Trees.Events.Tree.Zone.TreeZoneStartEvent;
+import org.x00hero.TreeDetector.Trees.Events.Zone.TreeZoneExpiredEvent;
+import org.x00hero.TreeDetector.Trees.Events.Zone.TreeZoneStartEvent;
 import org.x00hero.TreeDetector.Trees.Tree;
 import org.x00hero.TreeDetector.Trees.Events.Tree.TreeHitEvent;
-import org.x00hero.TreeDetector.Trees.Events.Tree.Zone.TreeZoneHitEvent;
-import org.x00hero.TreeDetector.Trees.Events.Tree.Zone.TreeZoneMissEvent;
+import org.x00hero.TreeDetector.Trees.Events.Zone.TreeZoneHitEvent;
+import org.x00hero.TreeDetector.Trees.Events.Zone.TreeZoneMissEvent;
 
 import static org.x00hero.TreeDetector.Config.*;
 import static org.x00hero.TreeDetector.Main.log;
-import static org.x00hero.TreeDetector.Trees.TreeFunctions.PlaySoundAtBlock;
-import static org.x00hero.TreeDetector.Trees.TreeFunctions.randomize;
+import static org.x00hero.TreeDetector.Trees.TreeFunctions.*;
 
 public class TreeTest implements Listener {
     @EventHandler
@@ -32,8 +31,8 @@ public class TreeTest implements Listener {
     }
     @EventHandler
     public void onZoneHit(TreeZoneHitEvent e) {
-        e.getPlayer().sendMessage("Hit " + e.getZonesHit() + " / " + e.getTimesHit() + " (" + e.getHitPercent() + "%)");
-        if(e.getZonesHit() >= 6 && e.getHitPercent() > 75) e.getTree().collapse(e.getPlayer().getFacing());
+        e.getPlayer().sendMessage("Hit " + e.getZonesHit() + " / " + e.getTree().requiredZones + " (" + e.getHitPercent() + "%)");
+        if(e.getZonesHit() >= e.getTree().requiredZones && e.getHitPercent() > 75) e.getTree().collapse(e.getPlayer().getFacing());
     }
     @EventHandler
     public void onZoneMiss(TreeZoneMissEvent e) {
@@ -55,6 +54,7 @@ public class TreeTest implements Listener {
     public void onBranchLand(TreeBranchLandEvent e) {
         int random = randomize(branchSoundChance);
         if(random == branchSoundChance-1) PlaySoundAtBlock(e.getBlock(), e.getBlock().getBlockData().getSoundGroup().getStepSound(), branchVolume, branchPitch);
+        PoofBlockOutOfExistence(e.getBlock(), branchLifetime);
         //log("Branch Landed @ " + e.getBlock().getLocation());
     }
 }

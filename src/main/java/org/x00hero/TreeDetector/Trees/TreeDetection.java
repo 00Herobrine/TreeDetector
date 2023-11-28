@@ -1,4 +1,4 @@
-package org.x00hero.TreeDetector.Trees.Events;
+package org.x00hero.TreeDetector.Trees;
 
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -16,7 +16,6 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.x00hero.TreeDetector.Controllers.ActivityController;
 import org.x00hero.TreeDetector.Trees.Events.Tree.TreeBranchLandEvent;
-import org.x00hero.TreeDetector.Trees.Tree;
 import org.x00hero.TreeDetector.Trees.Events.Tree.TreeHitEvent;
 import org.x00hero.TreeDetector.Trees.Events.Tree.TreeSwapEvent;
 
@@ -24,7 +23,6 @@ import java.util.ArrayList;
 
 import static org.x00hero.TreeDetector.Config.*;
 import static org.x00hero.TreeDetector.Main.*;
-import static org.x00hero.TreeDetector.Trees.TreeFunctions.PoofBlockOutOfExistence;
 import static org.x00hero.TreeDetector.Trees.TreeFunctions.fallingBlockList;
 
 public class TreeDetection implements Listener {
@@ -50,10 +48,9 @@ public class TreeDetection implements Listener {
     @EventHandler
     public static void onBlockFall(EntityChangeBlockEvent e) {
         if(!(e.getEntity() instanceof FallingBlock fallingBlock)) return;
-        else if(!fallingBlockList.contains(fallingBlock)) return;
-        CallEvent(new TreeBranchLandEvent(e.getBlock()));
+        else if(!fallingBlockList.containsKey(fallingBlock)) return;
+        CallEvent(new TreeBranchLandEvent(fallingBlockList.get(fallingBlock)));
         fallingBlockList.remove(fallingBlock);
-        PoofBlockOutOfExistence(fallingBlock.getLocation().getBlock(), 2);
     }
 
     @EventHandler

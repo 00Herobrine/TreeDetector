@@ -2,10 +2,9 @@ package org.x00hero.TreeDetector.Controllers;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
-import org.bukkit.scheduler.BukkitScheduler;
 import org.x00hero.TreeDetector.Trees.Tree;
 import org.x00hero.TreeDetector.Trees.TreeZone;
-import org.x00hero.TreeDetector.Trees.Events.Tree.Zone.TreeZoneExpiredEvent;
+import org.x00hero.TreeDetector.Trees.Events.Zone.TreeZoneExpiredEvent;
 import org.x00hero.TreeDetector.Main;
 
 import java.util.ArrayList;

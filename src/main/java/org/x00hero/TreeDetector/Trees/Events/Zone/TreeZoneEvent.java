@@ -1,4 +1,4 @@
-package org.x00hero.TreeDetector.Trees.Events.Tree.Zone;
+package org.x00hero.TreeDetector.Trees.Events.Zone;
 
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;

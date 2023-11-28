@@ -7,10 +7,16 @@ Detection: # Raising the # for any of the maxSearch can improve detection at the
   expirationCheckRate: 20
   materialConsistency: true # if the leaves should match the log type
   connectHives: true
+Tree:
+  Collapse:
+    requiredZones: 3 # requiredZones + (getTreeHeight() / zonesMod)
+    zonesMod: 3 # 1 more zone for every X blocks the tree is taller
+    requiredPercentage: 75.0
+    branchLifetime: 1 # Seconds before being dropped as an Item
 Zone:
   size: 1
   invisible: true
-  entity: SLIME
+  entity: SLIME # useless currently
   colliderName: "TREE-COLLIDER"
   timeout: 60 # in seconds
   constraint:
@@ -50,3 +56,7 @@ Sound: # Audio can be any sound in Minecraft's library
     audio: UI_LOOM_TAKE_RESULT
     pitch: 0.7
     volume: 0.2
+  Drop:
+    audio: ENTITY_ITEM_FRAME_ROTATE_ITEM
+    pitch: 0.6
+    volume: 0.5

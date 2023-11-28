@@ -18,7 +18,7 @@ import static org.x00hero.TreeDetector.Main.*;
 
 public class TreeFunctions {
     private static final Random random = new Random();
-    public static List<FallingBlock> fallingBlockList = new ArrayList<>();
+    public static HashMap<FallingBlock, FallingBranch> fallingBlockList = new HashMap<>();
     public static int randomize(int max) { return (int) randomize(0, max); }
     public static float randomize(float max) { return randomize(0, max); }
    // public static int randomize(int min, int max) { return min + random.nextInt() * (max - min); }
@@ -29,28 +29,35 @@ public class TreeFunctions {
     public static void PlaySoundAtBlock(Block block, String sound, float volume, float pitch) { PlaySoundAtLocation(block.getLocation(), sound, volume, pitch); }
     public static void PlaySoundAtLocation(Location location, Sound sound, float volume, float pitch) { location.getWorld().playSound(location, sound, volume, pitch); }
     public static void PlaySoundAtLocation(Location location, String sound, float volume, float pitch) { location.getWorld().playSound(location, sound, volume, pitch); }
-    public static void PoofBlockOutOfExistence(Block block, int lifetime) { timeUntilDDay.put(block, System.currentTimeMillis() + (lifetime * 1000L)); }
-/*    public static Sound[] treeSounds = new Sound[] {
-            Sound.ITEM_CROSSBOW_QUICK_CHARGE_1, Sound.ITEM_CROSSBOW_QUICK_CHARGE_2, Sound.ITEM_CROSSBOW_QUICK_CHARGE_3,
-            Sound.ITEM_CROSSBOW_LOADING_MIDDLE, Sound.ITEM_CROSSBOW_LOADING_START };*/
+    public static void PoofBlockOutOfExistence(Block block, int lifetime) {
+        timeUntilDDay.put(block, System.currentTimeMillis() + (lifetime * 1000L));
+    }
     public static void Collapse(Tree tree, Player player) { Collapse(tree, player.getFacing()); }
     public static void Collapse(Tree tree, BlockFace fallingFace) {
         Sound randomSound = collapseSounds[randomize(collapseSounds.length-1)];
         tree.collapsed = true;
-        log("Random: " + randomSound);
         PlaySoundAtLocation(tree.getLocation(), randomSound, collapseVolume, collapsePitch - (tree.getHeight() * collapsePitchMod) + 0.01f);
-        for(Block block : tree.getConnectedBlocks()) spawnFallingSand(block, fallingFace);
-        CallEvent(new TreeCollapseEvent(tree, fallingFace));
+        List<FallingBranch> fallingBranches = new ArrayList<>();
+        CallEvent(new TreeCollapseEvent(tree, fallingFace, fallingBranches));
+        for(Block block : tree.getConnectedBlocks())
+            fallingBranches.add(spawnFallingBranch(block, fallingFace, tree));
+        tree.connectedLogs.clear();
+        tree.connectedHives.clear();
+        tree.connectedLogs.clear();
         tree.stopGame();
     }
-    public static FallingBlock spawnFallingSand(Block block) { return spawnFallingSand(block.getLocation(), block.getType(), new Vector(0, -.5, 0)); }
-    public static FallingBlock spawnFallingSand(Block block, BlockFace fallingFace) { return spawnFallingSand(block.getLocation(), block.getType(), fallingFace.getDirection()); }
+    public static FallingBlock spawnFallingSand(Block block, BlockFace fallingFace) { return spawnFallingSand(block, fallingFace.getDirection()); }
+    public static FallingBlock spawnFallingSand(Block block, Vector fallVector) { return spawnFallingSand(block.getLocation(), block.getType(), fallVector); }
     public static FallingBlock spawnFallingSand(Location location, Material material, Vector fallVector) {
         FallingBlock fallingBlock = location.getWorld().spawnFallingBlock(location, material.createBlockData());
         fallingBlock.setVelocity(divideVector(fallVector, 3));
         fallingBlock.setDropItem(true);
-        fallingBlockList.add(fallingBlock);
         return fallingBlock;
+    }
+    public static FallingBranch spawnFallingBranch(Block block, BlockFace fallingFace, Tree tree) {
+        FallingBranch branch = new FallingBranch(spawnFallingSand(block, fallingFace), fallingFace, tree);
+        fallingBlockList.put(branch.fallingBlock(), branch);
+        return branch;
     }
     private static HashMap<Block, Long> timeUntilDDay = new HashMap<>();
     public static void DDayCheck() {
@@ -60,15 +67,19 @@ public class TreeFunctions {
                 Map.Entry<Block, Long> entry = iterator.next();
                 Block block = entry.getKey();
                 if (System.currentTimeMillis() >= entry.getValue()) {
-                    block.getLocation().getWorld().spawnParticle(Particle.EXPLOSION_NORMAL, block.getLocation(), 1);
-                    if (block.getType() != Material.AIR)
-                        block.getLocation().getWorld().dropItemNaturally(block.getLocation(), new ItemStack(block.getType()));
-                    iterator.remove(); // Use iterator to remove the current element
-                    block.setType(Material.AIR);
-                    // PlaySoundAtBlock(block, Sound.ITEM_BUNDLE_INSERT);
+                    DropAndDeleteBlock(block);
+                    iterator.remove();
                 }
             }
         }, 0L, expirationCheckRate);
         schedulers.add(id);
+    }
+    public static void DropAndDeleteBlock(Block block) {
+        block.getLocation().getWorld().spawnParticle(Particle.EXPLOSION_NORMAL, block.getLocation(), 1);
+        if (block.getType() != Material.AIR) {
+            block.getLocation().getWorld().dropItemNaturally(block.getLocation(), new ItemStack(block.getType()));
+            PlaySoundAtBlock(block, dropSound, dropVolume, dropPitch);
+        }
+        block.setType(Material.AIR);
     }
 }

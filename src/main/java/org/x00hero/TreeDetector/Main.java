@@ -1,15 +1,12 @@
 package org.x00hero.TreeDetector;
 
-import org.bukkit.Location;
 import org.bukkit.Bukkit;
-import org.bukkit.Sound;
-import org.bukkit.block.Block;
 import org.bukkit.event.Event;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.util.Vector;
 import org.x00hero.TreeDetector.Controllers.ActivityController;
 import org.x00hero.TreeDetector.Controllers.CommandController;
-import org.x00hero.TreeDetector.Trees.Events.TreeDetection;
+import org.x00hero.TreeDetector.Trees.TreeDetection;
 import org.x00hero.TreeDetector.Test.TreeTest;
 import org.x00hero.TreeDetector.Trees.TreeFunctions;
 

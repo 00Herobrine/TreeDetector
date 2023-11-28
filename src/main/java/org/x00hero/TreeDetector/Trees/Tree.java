@@ -7,8 +7,8 @@ import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
 import org.x00hero.TreeDetector.Controllers.ActivityController;
-import org.x00hero.TreeDetector.Trees.Events.Tree.Zone.TreeZoneMissEvent;
-import org.x00hero.TreeDetector.Trees.Events.Tree.Zone.TreeZoneStartEvent;
+import org.x00hero.TreeDetector.Trees.Events.Zone.TreeZoneMissEvent;
+import org.x00hero.TreeDetector.Trees.Events.Zone.TreeZoneStartEvent;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -16,7 +16,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import static org.x00hero.TreeDetector.Trees.Events.TreeDetection.*;
+import static org.x00hero.TreeDetector.Config.baseZones;
+import static org.x00hero.TreeDetector.Config.zonesMod;
+import static org.x00hero.TreeDetector.Trees.TreeDetection.*;
 import static org.x00hero.TreeDetector.Main.CallEvent;
 import static org.x00hero.TreeDetector.Trees.TreeFunctions.*;
 
@@ -31,7 +33,7 @@ public class Tree {
     public boolean collapsed = false;
     // Mini-Game
     public TreeZone zone;
-    public int zonesHit, zonesTotal, timesHit;
+    public int zonesHit, zonesTotal, timesHit, requiredZones;
     // Performance Monitoring
     public int calls;
     public long created = System.currentTimeMillis();
@@ -43,7 +45,7 @@ public class Tree {
     }
     // Functions
     public int getTrunkHeight() { return topTrunk.getY() - bottomTrunk.getY(); }
-    public int getHeight() { return topLeaf.getY() - bottomTrunk.getY(); }
+    public int getHeight() { return (topLeaf.getY() - bottomTrunk.getY()) + 1; }
     public int logCount() { return connectedLogs.size(); }
     public int leafCount() { return connectedLeaves.size(); }
     public Location getLocation() { return bottomTrunk.getLocation(); }
@@ -72,12 +74,14 @@ public class Tree {
     //public void displaySlime(Player player) { }
     public void displayParticle(Player player) { zone.display(player); }
     public void stopGame() { zone.endSlime(); }
-    public void startGame(Player player, @Nullable BlockFace face) {
+    public void startGame(Player player, @Nullable BlockFace face) { startGame(player, face, baseZones + (getHeight() / zonesMod));}
+    public void startGame(Player player, @Nullable BlockFace face, int requiredZones) {
         if(zone == null) zone = new TreeZone(initialBlock.getLocation(), face);
         if(ActivityController.isActive(player)) ActivityController.getTree(player).zone.endSlime();
-        ActivityController.setActive(player, this);
+        this.requiredZones = requiredZones;
         randomizeZone(face);
         displayZone(player);
+        ActivityController.setActive(player, this);
         CallEvent(new TreeZoneStartEvent(this, zone, player));
     }
     public boolean addBlock(Block block) {

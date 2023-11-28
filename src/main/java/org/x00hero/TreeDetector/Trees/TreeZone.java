@@ -6,7 +6,7 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Slime;
 import org.bukkit.util.Consumer;
-import org.x00hero.TreeDetector.Trees.Events.Tree.Zone.TreeZoneHitEvent;
+import org.x00hero.TreeDetector.Trees.Events.Zone.TreeZoneHitEvent;
 
 import javax.annotation.Nullable;
 

@@ -51,10 +51,20 @@ public class Config {
     public static float collapseVolume;
     public static float collapseVolumeMod;
     public static int collapseSoundChance;
+    public static int baseZones;
+    public static int zonesMod;
+    public static float requiredPercentage;
     //region Branch
     public static float branchVolume;
     public static float branchPitch;
+    public static int branchLifetime;
     public static int branchSoundChance;
+    //endregion
+
+    //region Drop
+    public static Sound dropSound;
+    public static float dropPitch;
+    public static float dropVolume;
     //endregion
     //endregion
 
@@ -114,7 +124,14 @@ public class Config {
         collapseSoundChance = plugin.getConfig().getInt("Sound.Collapse.chance");
         branchPitch = (float) plugin.getConfig().getDouble("Sound.Land.pitch");
         branchVolume = (float) plugin.getConfig().getDouble("Sound.Land.volume");
+        branchLifetime = plugin.getConfig().getInt("Tree.Collapse.branchLifetime");
         branchSoundChance = plugin.getConfig().getInt("Sound.Land.chance");
+        dropSound = Sound.valueOf(plugin.getConfig().getString("Sound.Drop.audio"));
+        dropPitch = (float) plugin.getConfig().getDouble("Sound.Drop.pitch");
+        dropVolume = (float) plugin.getConfig().getDouble("Sound.Drop.volume");
+        baseZones = plugin.getConfig().getInt("Tree.Collapse.requiredZones");
+        zonesMod = plugin.getConfig().getInt("Tree.Collapse.requiredZones");
+        requiredPercentage = (float) plugin.getConfig().getDouble("Tree.Collapse.requiredPercentage");
         //endregion
     }
 }
