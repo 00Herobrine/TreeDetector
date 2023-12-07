@@ -8,7 +8,7 @@ import org.x00hero.TreeDetector.Trees.Events.Tree.TreeCollapseEvent;
 import org.x00hero.TreeDetector.Trees.Events.Tree.TreeSwapEvent;
 import org.x00hero.TreeDetector.Trees.Events.Zone.TreeZoneExpiredEvent;
 import org.x00hero.TreeDetector.Trees.Events.Zone.TreeZoneStartEvent;
-import org.x00hero.TreeDetector.Trees.Tree;
+import org.x00hero.TreeDetector.Trees.Types.Tree;
 import org.x00hero.TreeDetector.Trees.Events.Tree.TreeHitEvent;
 import org.x00hero.TreeDetector.Trees.Events.Zone.TreeZoneHitEvent;
 import org.x00hero.TreeDetector.Trees.Events.Zone.TreeZoneMissEvent;

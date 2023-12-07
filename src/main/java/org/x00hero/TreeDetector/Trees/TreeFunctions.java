@@ -9,7 +9,12 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 import org.x00hero.TreeDetector.Main;
+import org.x00hero.TreeDetector.Trees.Events.Tree.TreeBranchFallEvent;
 import org.x00hero.TreeDetector.Trees.Events.Tree.TreeCollapseEvent;
+import org.x00hero.TreeDetector.Trees.Types.Collapsable.CollapsableTree;
+import org.x00hero.TreeDetector.Trees.Types.Collapsable.FallingBranch;
+import org.x00hero.TreeDetector.Trees.Types.Interactive.InteractiveTree;
+import org.x00hero.TreeDetector.Trees.Types.Tree;
 
 import java.util.*;
 
@@ -33,8 +38,8 @@ public class TreeFunctions {
     public static void PoofBlockOutOfExistence(Block block, int lifetime) {
         timeUntilDDay.put(block, System.currentTimeMillis() + (lifetime * 1000L));
     }
-    public static void Collapse(Tree tree, Player player) { Collapse(tree, player.getFacing()); }
-    public static void Collapse(Tree tree, BlockFace fallingFace) {
+    public static void Collapse(CollapsableTree tree, Player player) { Collapse(tree, player.getFacing()); }
+    public static void Collapse(CollapsableTree tree, BlockFace fallingFace) {
         Sound randomSound = collapseSounds[randomize(collapseSounds.length-1)];
         tree.collapsed = true;
         PlaySoundAtLocation(tree.getLocation(), randomSound, collapseVolume, collapsePitch - (tree.getHeight() * collapsePitchMod) + 0.01f);
@@ -45,19 +50,20 @@ public class TreeFunctions {
         tree.connectedLogs.clear();
         tree.connectedHives.clear();
         tree.connectedLogs.clear();
-        tree.stopGame();
+        if(tree instanceof InteractiveTree) ((InteractiveTree) tree).stopGame();
     }
     public static FallingBlock spawnFallingSand(Block block, BlockFace fallingFace) { return spawnFallingSand(block, fallingFace.getDirection()); }
     public static FallingBlock spawnFallingSand(Block block, Vector fallVector) { return spawnFallingSand(block.getLocation(), block.getType(), fallVector); }
     public static FallingBlock spawnFallingSand(Location location, Material material, Vector fallVector) {
         FallingBlock fallingBlock = location.getWorld().spawnFallingBlock(location, material.createBlockData());
-        fallingBlock.setVelocity(divideVector(fallVector, 3));
+        fallingBlock.setVelocity(fallVector.multiply(velocityMod));
         fallingBlock.setDropItem(true);
         return fallingBlock;
     }
     public static FallingBranch spawnFallingBranch(Block block, BlockFace fallingFace, Tree tree) {
         FallingBranch branch = new FallingBranch(spawnFallingSand(block, fallingFace), fallingFace, tree);
         fallingBlockList.put(branch.fallingBlock(), branch);
+        CallEvent(new TreeBranchFallEvent(branch));
         return branch;
     }
     private static HashMap<Block, Long> timeUntilDDay = new HashMap<>();

@@ -7,7 +7,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.x00hero.TreeDetector.Trees.Tree;
+import org.x00hero.TreeDetector.Trees.Types.Tree;
 
 public class TreeInteractEvent extends Event {
     public static HandlerList handlerList = new HandlerList();

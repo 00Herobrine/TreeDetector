@@ -5,23 +5,24 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.x00hero.TreeDetector.Trees.Tree;
-import org.x00hero.TreeDetector.Trees.TreeZone;
+import org.x00hero.TreeDetector.Trees.Types.Interactive.InteractiveTree;
+import org.x00hero.TreeDetector.Trees.Types.Tree;
+import org.x00hero.TreeDetector.Trees.Types.Interactive.TreeZone;
 
 import java.util.Locale;
 
 public class TreeZoneEvent extends Event {
     public static HandlerList handlerList = new HandlerList();
-    private final Tree tree;
+    private final InteractiveTree tree;
     private final TreeZone zone;
     private final Player player;
-    public TreeZoneEvent(Tree tree, TreeZone zone, Player player) {
+    public TreeZoneEvent(InteractiveTree tree, TreeZone zone, Player player) {
         this.tree = tree;
         this.zone = zone;
         this.player = player;
     }
 
-    public Tree getTree() { return tree; }
+    public InteractiveTree getTree() { return tree; }
     public TreeZone getZone() { return zone; }
     public Player getPlayer() { return player; }
     public BlockFace getFace() { return zone.face; }

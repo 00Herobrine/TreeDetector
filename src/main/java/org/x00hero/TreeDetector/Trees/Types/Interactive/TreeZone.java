@@ -1,4 +1,4 @@
-package org.x00hero.TreeDetector.Trees;
+package org.x00hero.TreeDetector.Trees.Types.Interactive;
 
 import org.bukkit.Location;
 import org.bukkit.block.BlockFace;
@@ -7,6 +7,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.entity.Slime;
 import org.bukkit.util.Consumer;
 import org.x00hero.TreeDetector.Trees.Events.Zone.TreeZoneHitEvent;
+import org.x00hero.TreeDetector.Trees.Types.Tree;
 
 import javax.annotation.Nullable;
 
@@ -53,7 +54,7 @@ public class TreeZone {
         slime.remove();
         slime = null;
     }
-    public void hit(Tree tree, Player player) { timeHit = System.currentTimeMillis(); updateExpiration(); endSlime(); CallEvent(new TreeZoneHitEvent(tree,this, player)); }
+    public void hit(InteractiveTree tree, Player player) { timeHit = System.currentTimeMillis(); updateExpiration(); endSlime(); CallEvent(new TreeZoneHitEvent(tree,this, player)); }
     public void updateExpiration() { expirationTime = System.currentTimeMillis() + (zoneTimeout * 1000L); }
     public boolean isExpired() { return System.currentTimeMillis() >= expirationTime; }
     public Location getRandomLocation() { return getRandomLocation(initialLocation, new BlockFace[]{BlockFace.NORTH, BlockFace.EAST, BlockFace.SOUTH, BlockFace.WEST} ); }

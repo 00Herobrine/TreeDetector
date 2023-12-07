@@ -3,22 +3,23 @@ package org.x00hero.TreeDetector;
 import org.bukkit.Color;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
-import org.bukkit.block.BlockFace;
 import org.bukkit.entity.EntityType;
+import org.x00hero.TreeDetector.Trees.SearchDirection;
 
 import static org.x00hero.TreeDetector.Main.plugin;
 
 public class Config {
     //region Detection
     public static int logsThreshold; // required amount of logs attached
+    public static int logDeviation; // allowed distance from another log to be considered the same tree
     public static int leavesThreshold; // required amount of leaves attached to be considered a Tree
     public static int maxSearchWidth; // distance from initial block (X & Z)
     public static int maxSearchHeight; // distance from initial block (Y)
     public static int maxSearchCalls; // max blocks to iterate through
-    public static int expirationCheckRate;
+    public static int expirationCheckRate; // frequency for Mini-Game expiration in Ticks
     public static boolean materialConsistency; // if leaves match the trunk type
     public static boolean connectHives;
-    public static BlockFace[] searchDirections;
+    public static SearchDirection[] searchDirections;
     //endregion
 
     //region Zone
@@ -61,6 +62,7 @@ public class Config {
     public static float branchPitch;
     public static int branchLifetime;
     public static int branchSoundChance;
+    public static float velocityMod;
     //endregion
 
     //region Drop
@@ -74,6 +76,7 @@ public class Config {
         plugin.reloadConfig();
         //region Detection
         logsThreshold = plugin.getConfig().getInt("Detection.logThreshold");
+        logDeviation = plugin.getConfig().getInt("Detection.logDeviation");
         leavesThreshold = plugin.getConfig().getInt("Detection.leavesThreshold");
         maxSearchWidth = plugin.getConfig().getInt("Detection.maxSearchWidth");
         maxSearchHeight = plugin.getConfig().getInt("Detection.maxSearchHeight");
@@ -82,8 +85,8 @@ public class Config {
         materialConsistency = plugin.getConfig().getBoolean("Detection.materialConsistency");
         connectHives = plugin.getConfig().getBoolean("Detection.connectHives");
         searchDirections = plugin.getConfig().getList("Detection.searchDirections").stream()
-                .map(o -> BlockFace.valueOf((String) o))
-                .toArray(BlockFace[]::new);
+                .map(o -> SearchDirection.valueOf((String) o))
+                .toArray(SearchDirection[]::new);
         //endregion
 
         //region Zone
@@ -134,9 +137,11 @@ public class Config {
         dropSound = Sound.valueOf(plugin.getConfig().getString("Sound.Drop.audio"));
         dropPitch = (float) plugin.getConfig().getDouble("Sound.Drop.pitch");
         dropVolume = (float) plugin.getConfig().getDouble("Sound.Drop.volume");
+        velocityMod = (float) plugin.getConfig().getDouble("Tree.Collapse.velocityMod");
         baseZones = plugin.getConfig().getInt("Tree.Collapse.requiredZones");
         zonesMod = plugin.getConfig().getInt("Tree.Collapse.zonesMod");
         requiredPercentage = (float) plugin.getConfig().getDouble("Tree.Collapse.requiredPercentage");
         //endregion
     }
+
 }

@@ -4,8 +4,8 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.x00hero.TreeDetector.Trees.FallingBranch;
-import org.x00hero.TreeDetector.Trees.Tree;
+import org.x00hero.TreeDetector.Trees.Types.Collapsable.FallingBranch;
+import org.x00hero.TreeDetector.Trees.Types.Tree;
 
 import java.util.List;
 

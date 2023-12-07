@@ -1,25 +1,15 @@
-package org.x00hero.TreeDetector.Trees;
+package org.x00hero.TreeDetector.Trees.Types;
 
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
-import org.bukkit.entity.Player;
-import org.x00hero.TreeDetector.Controllers.ActivityController;
-import org.x00hero.TreeDetector.Trees.Events.Zone.TreeZoneMissEvent;
-import org.x00hero.TreeDetector.Trees.Events.Zone.TreeZoneStartEvent;
 
-import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
-import static org.x00hero.TreeDetector.Config.baseZones;
-import static org.x00hero.TreeDetector.Config.zonesMod;
+import static org.x00hero.TreeDetector.Config.*;
 import static org.x00hero.TreeDetector.Trees.TreeDetection.*;
-import static org.x00hero.TreeDetector.Main.CallEvent;
 import static org.x00hero.TreeDetector.Trees.TreeFunctions.*;
 
 public class Tree {
@@ -30,16 +20,33 @@ public class Tree {
     public Set<Block> connectedLogs = new HashSet<>();
     public Set<Block> connectedLeaves = new HashSet<>();
     public Set<Block> connectedHives = new HashSet<>();
-    public boolean collapsed = false;
-    // Mini-Game
-    public TreeZone zone;
-    public int zonesHit, zonesTotal, timesHit, requiredZones;
     // Performance Monitoring
     public int calls;
     public long created = System.currentTimeMillis();
     public long completed = -1;
     public long Result() { return completed - created; }
     // Initializers
+/*    public Tree(Set<Block> connectedLogs, Set<Block> connectedLeaves, Set<Block> connectedHives) {
+        initialBlock = (Block) connectedLogs.toArray()[0];
+        this.connectedLogs = connectedLogs;
+        this.connectedLeaves = connectedLeaves;
+        this.connectedHives = connectedHives;
+    }*/
+    public Tree(Tree tree) {
+        this.bottomTrunk = tree.bottomTrunk;
+        this.topTrunk = tree.topTrunk;
+        this.topLeaf = tree.topLeaf;
+        this.bottomLeaf = tree.bottomLeaf;
+        this.trunkType = tree.trunkType;
+        this.leafType = tree.leafType;
+        this.initialBlock = tree.initialBlock;
+        this.connectedLogs = tree.connectedLogs;
+        this.connectedLeaves = tree.connectedLeaves;
+        this.connectedHives = tree.connectedHives;
+        this.calls = tree.calls;
+        this.created = tree.created;
+        this.completed = tree.completed;
+    }
     public Tree(Block initialBlock) {
         this.initialBlock = initialBlock;
     }
@@ -63,32 +70,23 @@ public class Tree {
     public void playSound(String sound) { PlaySoundAtBlock(bottomTrunk, sound); }
     public void playSound(Sound sound, float volume, float pitch) { PlaySoundAtBlock(bottomTrunk, sound, volume, pitch); }
     public void playSound(String sound, float volume, float pitch) { PlaySoundAtBlock(bottomTrunk, sound, volume, pitch); }
-    public void hitZone(Player player) { zonesHit++; timesHit++; zone.hit(this, player); randomizeZone(); }
-    public void missedZone(Player player) { timesHit++; CallEvent(new TreeZoneMissEvent(this, zone, player)); }
-    public void randomizeZone() { randomizeZone(null); }
-    public void randomizeZone(@Nullable BlockFace face) { if(collapsed) return; zone.randomizeLocation(face); zone.spawnSlime(); zone.updateExpiration(); zonesTotal++; }
-    public void displayZone(Player player) { /*displaySlime();*/ displayParticle(player); }
-    public BlockFace[] fallDirection = new BlockFace[]{BlockFace.NORTH,BlockFace.EAST,BlockFace.SOUTH,BlockFace.WEST};
-    public void collapse() { Collapse(this, fallDirection[randomize(fallDirection.length-1)]); }
-    public void collapse(BlockFace fallingFace) { Collapse(this, fallingFace); }
-    //public void displaySlime(Player player) { }
-    public void displayParticle(Player player) { zone.display(player); }
-    public void stopGame() { zone.endSlime(); }
-    public void startGame(Player player, @Nullable BlockFace face) { startGame(player, face, baseZones + (getHeight() / zonesMod));}
-    public void startGame(Player player, @Nullable BlockFace face, int requiredZones) {
-        if(zone == null) zone = new TreeZone(initialBlock.getLocation(), face);
-        if(ActivityController.isActive(player)) ActivityController.getTree(player).zone.endSlime();
-        this.requiredZones = requiredZones;
-        randomizeZone(face);
-        displayZone(player);
-        ActivityController.setActive(player, this);
-        CallEvent(new TreeZoneStartEvent(this, zone, player));
-    }
+    public static BlockFace[] fallDirection = new BlockFace[]{BlockFace.NORTH,BlockFace.EAST,BlockFace.SOUTH,BlockFace.WEST};
     public boolean addBlock(Block block) {
         if(connectedLogs.contains(block) || connectedLeaves.contains(block)) return false;
-        if(isLogBlock(block)) { addLog(block); return true; }
-        else if(isLeafBlock(block)) { addLeaf(block); return true; }
-        else if(isHiveBlock(block)) { addHive(block); return true; }
+        if(isLogBlock(block)) {
+            if(BlockWithinDistance(block, connectedLogs.stream().toList(), logDeviation)) { addLog(block); return true; }
+            return false;
+        } else if(isLeafBlock(block)) { addLeaf(block); return true;
+        } else if(isHiveBlock(block)) { addHive(block); return true;
+        }
+        return false;
+    }
+    public static boolean BlockWithinDistance(Block block, List<Block> blocks, int distance) {
+        if(blocks.size() == 0) return true;
+        for(Block connectedBlock : blocks) {
+            Location connectedLocation = connectedBlock.getLocation();
+            if(connectedLocation.distance(block.getLocation()) < distance) return true;
+        }
         return false;
     }
     public void addLog(Block block) {

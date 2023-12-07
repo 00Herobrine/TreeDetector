@@ -4,6 +4,7 @@ Detection: # Raising the # for any of the maxSearch can improve detection at the
   maxSearchHeight: 20 # height radius for search
   leavesThreshold: 6 # required leaves required for a valid Tree
   logThreshold: 3 # required logs required for a valid Tree
+  logDeviation: 2 # The max distance allowed between logs to be the same "Tree"
   expirationCheckRate: 20 # Check when mini-games are expired per X ticks
   materialConsistency: true # if the leaves should match the log type
   connectHives: true
@@ -22,8 +23,9 @@ Tree:
   Collapse:
     requiredZones: 3 # requiredZones + (getTreeHeight() / zonesMod)
     zonesMod: 3 # 1 more zone for every X blocks the tree is taller
-    requiredPercentage: 75.0
+    requiredPercentage: 75.0 # Hit percentage required before collapse
     branchLifetime: 1 # Seconds before being dropped as an Item
+    velocityMod: .3
 Zone:
   size: 1
   invisible: true
