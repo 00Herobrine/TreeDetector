@@ -26,8 +26,13 @@ public class InteractiveTree extends CollapsableTree {
     public void hitZone(Player player) { zonesHit++; timesHit++; zone.hit(this, player); randomizeZone(); }
     public void missedZone(Player player) { timesHit++; CallEvent(new TreeZoneMissEvent(this, zone, player)); }
     public void randomizeZone() { randomizeZone(null); }
-    public void randomizeZone(@Nullable BlockFace face) { if(collapsed) return; zone.randomizeLocation(face); zone.spawnSlime(); zone.updateExpiration(); zonesTotal++; }
-    //public void displaySlime(Player player) { }
+    public void randomizeZone(@Nullable BlockFace face) {
+        if(collapsed) return;
+        zone.randomizeLocation(face);
+        zone.spawnSlime();
+        zone.updateExpiration();
+        zonesTotal++;
+    }
     public void displayZone(Player player) { /*displaySlime();*/ displayParticle(player); }
     public void displayParticle(Player player) { zone.display(player); }
     public void stopGame() { zone.endSlime(); }

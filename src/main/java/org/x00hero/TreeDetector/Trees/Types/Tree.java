@@ -20,12 +20,14 @@ public class Tree {
     public Set<Block> connectedLogs = new HashSet<>();
     public Set<Block> connectedLeaves = new HashSet<>();
     public Set<Block> connectedHives = new HashSet<>();
-    // Performance Monitoring
+    //region Performance Monitoring
     public int calls;
     public long created = System.currentTimeMillis();
     public long completed = -1;
     public long Result() { return completed - created; }
-    // Initializers
+    //endregion
+
+    //region Initializers
 /*    public Tree(Set<Block> connectedLogs, Set<Block> connectedLeaves, Set<Block> connectedHives) {
         initialBlock = (Block) connectedLogs.toArray()[0];
         this.connectedLogs = connectedLogs;
@@ -50,7 +52,9 @@ public class Tree {
     public Tree(Block initialBlock) {
         this.initialBlock = initialBlock;
     }
-    // Functions
+    //endregion
+
+    //region Functions
     public int getTrunkHeight() { return topTrunk.getY() - bottomTrunk.getY(); }
     public int getHeight() { return (topLeaf.getY() - bottomTrunk.getY()) + 1; }
     public int logCount() { return connectedLogs.size(); }
@@ -107,4 +111,5 @@ public class Tree {
         connectedHives.add(block);
         completed = System.currentTimeMillis();
     }
+    //endregion
 }

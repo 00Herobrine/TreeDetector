@@ -28,6 +28,7 @@ import static org.x00hero.TreeDetector.Main.*;
 import static org.x00hero.TreeDetector.Trees.TreeFunctions.fallingBlockList;
 
 public class TreeDetection implements Listener {
+    public static Material[] possibleAttachments = new Material[] { Material.VINE, Material.COCOA_BEANS };
     @EventHandler
     public void Damage(EntityDamageEvent e) {
         if(e.getCause() == EntityDamageEvent.DamageCause.SUFFOCATION && e.getEntity() instanceof Slime slime)
